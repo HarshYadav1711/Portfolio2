@@ -131,6 +131,9 @@ const getProjectImage = (repoName: string, index: number): string => {
   const nameLower = repoName.toLowerCase();
   
   // Map specific project names to their images
+  if (nameLower === '1' || nameLower.trim() === '1') {
+    return '/1.png';
+  }
   if (nameLower.includes('blog') && nameLower.includes('website')) {
     return '/Blog Website.png';
   }
