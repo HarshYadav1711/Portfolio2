@@ -89,9 +89,15 @@ export async function POST(request: NextRequest) {
         const escapedEmail = escapeHtml(email);
         const escapedMessage = escapeHtml(message).replace(/\n/g, '<br>');
 
+        // Ensure CONTACT_EMAIL is defined (TypeScript safety)
+        const contactEmail = process.env.CONTACT_EMAIL;
+        if (!contactEmail) {
+          throw new Error('CONTACT_EMAIL is not set');
+        }
+
         const emailPayload = {
           from: fromEmail,
-          to: process.env.CONTACT_EMAIL,
+          to: contactEmail,
           replyTo: email,
           subject: `New Contact Form Message from ${name}`,
           html: `
@@ -115,7 +121,7 @@ export async function POST(request: NextRequest) {
         };
 
         console.log('📤 Attempting to send email via Resend...', {
-          to: process.env.CONTACT_EMAIL,
+          to: contactEmail,
           from: fromEmail,
           subject: emailPayload.subject,
         });
