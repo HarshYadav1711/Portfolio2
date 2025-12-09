@@ -123,6 +123,12 @@ export function convertReposToProjects(repos: GitHubRepo[], username: string): P
     // Capitalize first letter
     description = description.charAt(0).toUpperCase() + description.slice(1);
 
+    // Only use homepage if it exists and is not empty, otherwise don't show live URL
+    // This prevents 404 errors from invalid GitHub Pages URLs
+    const liveUrl = repo.homepage && repo.homepage.trim() !== '' 
+      ? repo.homepage 
+      : '';
+
     return {
       title: repo.name
         .split('-')
@@ -131,7 +137,7 @@ export function convertReposToProjects(repos: GitHubRepo[], username: string): P
       description: description,
       tech: tech.length > 0 ? tech : ['JavaScript', 'Git'],
       image: `/project${index + 1}.jpg`, // TODO: Add project screenshots to /public folder (project1.jpg, project2.jpg, etc.)
-      liveUrl: repo.homepage || `https://${username}.github.io/${repo.name}`,
+      liveUrl: liveUrl,
       githubUrl: repo.html_url,
     };
   });
