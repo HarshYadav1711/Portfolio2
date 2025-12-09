@@ -88,8 +88,37 @@ export async function fetchGitHubRepos(username: string): Promise<GitHubRepo[]> 
   }
 }
 
+// Validate URL format
+function isValidUrlFormat(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+// Validate URL using server-side API route
+async function validateUrl(url: string): Promise<boolean> {
+  // First check URL format
+  if (!isValidUrlFormat(url)) {
+    return false;
+  }
+
+  try {
+    // Use API route to validate URL server-side (avoids CORS issues)
+    const response = await fetch(`/api/validate-url?url=${encodeURIComponent(url)}`);
+    const data = await response.json();
+    return data.valid === true;
+  } catch (error) {
+    console.error(`Error validating URL ${url}:`, error);
+    // If validation fails, err on the side of caution and return false
+    return false;
+  }
+}
+
 // Convert GitHub repos to Project format
-export function convertReposToProjects(repos: GitHubRepo[], username: string): Project[] {
+export async function convertReposToProjects(repos: GitHubRepo[], username: string): Promise<Project[]> {
   // Filter out forks and archived repos, sort by stars and recency
   const filteredRepos = repos
     .filter(repo => !repo.name.includes('portfolio') && !repo.fork && !repo.archived && !repo.name.includes('test'))
@@ -102,44 +131,71 @@ export function convertReposToProjects(repos: GitHubRepo[], username: string): P
     })
     .slice(0, 6); // Get top 6 projects
 
-  return filteredRepos.map((repo, index) => {
-    const tech = detectTechStack(repo);
-    
-    // Generate a better description if none exists
-    let description = repo.description || '';
-    if (!description || description.trim().length === 0) {
-      const nameWords = repo.name
-        .split(/[-_]/)
-        .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-        .join(' ');
-      description = `A ${nameWords} project showcasing modern development practices and clean architecture.`;
-    }
+  // Known problematic projects that should not show live URLs
+  // These projects have homepage URLs set but return 404
+  const problematicProjects = ['her', 'my-portfolio'];
 
-    // Enhance short descriptions
-    if (description.length < 60) {
-      description += ` Built with best practices and modern web technologies.`;
-    }
+  // Process projects and validate URLs
+  const projects = await Promise.all(
+    filteredRepos.map(async (repo, index) => {
+      const tech = detectTechStack(repo);
+      
+      // Generate a better description if none exists
+      let description = repo.description || '';
+      if (!description || description.trim().length === 0) {
+        const nameWords = repo.name
+          .split(/[-_]/)
+          .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+          .join(' ');
+        description = `A ${nameWords} project showcasing modern development practices and clean architecture.`;
+      }
 
-    // Capitalize first letter
-    description = description.charAt(0).toUpperCase() + description.slice(1);
+      // Enhance short descriptions
+      if (description.length < 60) {
+        description += ` Built with best practices and modern web technologies.`;
+      }
 
-    // Only use homepage if it exists and is not empty, otherwise don't show live URL
-    // This prevents 404 errors from invalid GitHub Pages URLs
-    const liveUrl = repo.homepage && repo.homepage.trim() !== '' 
-      ? repo.homepage 
-      : '';
+      // Capitalize first letter
+      description = description.charAt(0).toUpperCase() + description.slice(1);
 
-    return {
-      title: repo.name
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' '),
-      description: description,
-      tech: tech.length > 0 ? tech : ['JavaScript', 'Git'],
-      image: `/project${index + 1}.jpg`, // TODO: Add project screenshots to /public folder (project1.jpg, project2.jpg, etc.)
-      liveUrl: liveUrl,
-      githubUrl: repo.html_url,
-    };
-  });
+      // Validate homepage URL
+      let liveUrl = '';
+      const repoNameLower = repo.name.toLowerCase();
+      const isProblematicProject = problematicProjects.some(problematic => 
+        repoNameLower === problematic.toLowerCase() || repoNameLower.includes(problematic.toLowerCase())
+      );
+
+      if (repo.homepage && repo.homepage.trim() !== '') {
+        // Skip validation for known problematic projects
+        if (isProblematicProject) {
+          console.warn(`Skipping live URL for known problematic project: ${repo.name}`);
+          liveUrl = '';
+        } else {
+          // Validate URL for other projects
+          const isValid = await validateUrl(repo.homepage);
+          if (isValid) {
+            liveUrl = repo.homepage;
+          } else {
+            // URL is invalid, don't set liveUrl
+            console.warn(`Invalid or inaccessible URL for project ${repo.name}: ${repo.homepage}`);
+          }
+        }
+      }
+
+      return {
+        title: repo.name
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '),
+        description: description,
+        tech: tech.length > 0 ? tech : ['JavaScript', 'Git'],
+        image: `/project${index + 1}.jpg`, // TODO: Add project screenshots to /public folder (project1.jpg, project2.jpg, etc.)
+        liveUrl: liveUrl,
+        githubUrl: repo.html_url,
+      };
+    })
+  );
+
+  return projects;
 }
 

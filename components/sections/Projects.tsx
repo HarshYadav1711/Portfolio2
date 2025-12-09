@@ -34,7 +34,7 @@ export default function Projects() {
         const repos = await fetchGitHubRepos(GITHUB_USERNAME);
         
         if (repos.length > 0) {
-          const githubProjects = convertReposToProjects(repos, GITHUB_USERNAME);
+          const githubProjects = await convertReposToProjects(repos, GITHUB_USERNAME);
           setProjects(githubProjects);
         } else {
           console.warn("No GitHub repositories found. Using fallback projects.");
