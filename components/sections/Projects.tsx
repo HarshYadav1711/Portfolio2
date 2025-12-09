@@ -172,18 +172,26 @@ function ProjectCard({
         <div className="absolute inset-0 bg-gradient-to-br from-accent-yellow/10 to-accent-red/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         {/* Try to load project image, fallback to gradient */}
         <div className="relative w-full h-full">
-          <Image
-            src={project.image}
-            alt={project.title}
-            fill
-            className="object-cover"
-            onError={(e) => {
-              // Hide image on error, show gradient background instead
-              e.currentTarget.style.display = 'none';
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-gray-600 text-sm">
-            {project.image.includes('project') ? 'Project Image' : ''}
+          {project.image && (
+            <Image
+              src={project.image}
+              alt={project.title}
+              fill
+              className="object-cover"
+              unoptimized
+              quality={95}
+              priority={index < 2}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              onError={(e) => {
+                // Hide image on error, show gradient background instead
+                const target = e.currentTarget as HTMLImageElement;
+                target.style.display = 'none';
+                console.error(`Failed to load image: ${project.image}`);
+              }}
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-gray-600 text-sm pointer-events-none z-[-1]">
+            {project.image && project.image.includes('project') && !project.image.includes('Screenshot') ? 'Project Image' : ''}
           </div>
         </div>
         <motion.div
