@@ -20,19 +20,56 @@ export async function GET(request: NextRequest) {
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
     try {
-      const response = await fetch(url, {
-        method: 'HEAD',
-        signal: controller.signal,
-        redirect: 'follow',
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; PortfolioBot/1.0)',
-        },
-      });
+      // First try HEAD request (faster)
+      let response: Response;
+      try {
+        response = await fetch(url, {
+          method: 'HEAD',
+          signal: controller.signal,
+          redirect: 'follow',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; PortfolioBot/1.0)',
+          },
+        });
+      } catch (headError) {
+        // If HEAD fails, try GET to check the actual content
+        response = await fetch(url, {
+          method: 'GET',
+          signal: controller.signal,
+          redirect: 'follow',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; PortfolioBot/1.0)',
+          },
+        });
+      }
 
       clearTimeout(timeoutId);
 
-      // Consider 2xx and 3xx status codes as valid
-      const isValid = response.status >= 200 && response.status < 400;
+      // If it's a 404, definitely invalid
+      if (response.status === 404) {
+        return NextResponse.json({ valid: false, status: 404, error: 'Not Found' });
+      }
+
+      // Consider only 2xx status codes as valid (exclude 3xx redirects and 4xx/5xx errors)
+      // This ensures we catch 404 errors from Vercel and other platforms
+      const isValid = response.status >= 200 && response.status < 300;
+      
+      // For Vercel deployments, also check the response body for error messages
+      if (isValid && (url.includes('vercel.app') || url.includes('vercel.com'))) {
+        try {
+          const text = await response.text();
+          // Check for Vercel error indicators in the response
+          if (text.includes('404') || 
+              text.includes('NOT_FOUND') || 
+              text.includes('DEPLOYMENT_NOT_FOUND') ||
+              text.includes('This deployment cannot be found')) {
+            return NextResponse.json({ valid: false, status: 200, error: 'Vercel deployment not found' });
+          }
+        } catch (textError) {
+          // If we can't read the text, assume it's valid if status is 200
+        }
+      }
+      
       return NextResponse.json({ valid: isValid, status: response.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
@@ -42,7 +79,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ valid: false, error: 'Timeout' });
       }
       
-      // For other errors (like 404), return invalid
+      // For other errors (like 404, network errors), return invalid
       return NextResponse.json({ valid: false, error: fetchError.message });
     }
   } catch (error: any) {

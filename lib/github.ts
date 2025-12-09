@@ -133,7 +133,12 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
 
   // Known problematic projects that should not show live URLs
   // These projects have homepage URLs set but return 404
-  const problematicProjects = ['her', 'my-portfolio'];
+  // Check both repository names and URL patterns
+  const problematicProjects = ['her', 'my-portfolio', 'myportfolio'];
+  const problematicUrlPatterns = [
+    /her/i,  // Match "her" in URLs
+    /my-?portfolio/i,  // Match "my-portfolio" or "myportfolio" in URLs
+  ];
 
   // Process projects and validate URLs
   const projects = await Promise.all(
@@ -160,16 +165,39 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
 
       // Validate homepage URL
       let liveUrl = '';
-      const repoNameLower = repo.name.toLowerCase();
-      const isProblematicProject = problematicProjects.some(problematic => 
-        repoNameLower === problematic.toLowerCase() || repoNameLower.includes(problematic.toLowerCase())
+      const repoNameLower = repo.name.toLowerCase().trim();
+      const homepageLower = (repo.homepage || '').toLowerCase().trim();
+      
+      // Check if this is a known problematic project by repository name
+      const isProblematicByName = problematicProjects.some(problematic => {
+        const problematicLower = problematic.toLowerCase().trim();
+        return repoNameLower === problematicLower || repoNameLower.includes(problematicLower);
+      });
+      
+      // Check if URL matches problematic patterns
+      const isProblematicByUrl = problematicUrlPatterns.some(pattern => 
+        pattern.test(repo.homepage || '')
       );
+      
+      const isProblematicProject = isProblematicByName || isProblematicByUrl;
+
+      // Also check if URL is a Vercel deployment that might be broken
+      const isVercelDeployment = homepageLower.includes('vercel.app') || homepageLower.includes('vercel.com');
 
       if (repo.homepage && repo.homepage.trim() !== '') {
-        // Skip validation for known problematic projects
+        // Skip validation for known problematic projects - don't show live URL at all
         if (isProblematicProject) {
-          console.warn(`Skipping live URL for known problematic project: ${repo.name}`);
+          console.warn(`Skipping live URL for known problematic project: ${repo.name} (URL: ${repo.homepage})`);
           liveUrl = '';
+        } else if (isVercelDeployment) {
+          // For Vercel deployments, always validate to catch 404 errors
+          const isValid = await validateUrl(repo.homepage);
+          if (isValid) {
+            liveUrl = repo.homepage;
+          } else {
+            console.warn(`Invalid or inaccessible Vercel deployment for project ${repo.name}: ${repo.homepage}`);
+            liveUrl = '';
+          }
         } else {
           // Validate URL for other projects
           const isValid = await validateUrl(repo.homepage);
@@ -178,6 +206,7 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
           } else {
             // URL is invalid, don't set liveUrl
             console.warn(`Invalid or inaccessible URL for project ${repo.name}: ${repo.homepage}`);
+            liveUrl = '';
           }
         }
       }
