@@ -95,11 +95,24 @@ export async function POST(request: NextRequest) {
           throw new Error('CONTACT_EMAIL is not set');
         }
 
+        // Create plain text version for better email client compatibility
+        const textVersion = `New Contact Form Submission
+
+Name: ${name}
+Email: ${email}
+
+Message:
+${message}
+
+---
+This message was sent from your portfolio contact form.`;
+
         const emailPayload = {
           from: fromEmail,
           to: contactEmail,
           replyTo: email,
           subject: `New Contact Form Message from ${name}`,
+          text: textVersion,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h2 style="color: #333; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
@@ -128,6 +141,9 @@ export async function POST(request: NextRequest) {
 
         const result = await resend.emails.send(emailPayload);
         
+        // Log the full response for debugging
+        console.log('📨 Full Resend API response:', JSON.stringify(result, null, 2));
+        
         // Check if Resend returned an error in the response
         if (result.error) {
           emailErrorDetails = `Resend API error: ${JSON.stringify(result.error)}`;
@@ -140,19 +156,39 @@ export async function POST(request: NextRequest) {
           emailSent = true;
           console.log('✅ Email sent successfully via Resend!', {
             emailId: result.data.id,
-            to: process.env.CONTACT_EMAIL,
+            to: contactEmail,
           });
         } else {
-          emailErrorDetails = 'Resend returned an unexpected response format';
-          console.error('❌ Unexpected Resend response:', result);
+          // Log the full result to help debug
+          emailErrorDetails = `Resend returned an unexpected response format. Full response: ${JSON.stringify(result)}`;
+          console.error('❌ Unexpected Resend response format:', result);
+          console.error('❌ Response type:', typeof result);
+          console.error('❌ Response keys:', Object.keys(result || {}));
           throw new Error(emailErrorDetails);
         }
       } catch (emailError: any) {
         emailErrorDetails = emailError.message || String(emailError);
-        console.error('❌ Failed to send email via Resend:', {
+        
+        // Check for specific Resend error types
+        if (emailError.response) {
+          console.error('❌ Resend HTTP Error Response:', {
+            status: emailError.response?.status,
+            statusText: emailError.response?.statusText,
+            data: emailError.response?.data,
+          });
+          emailErrorDetails = `Resend HTTP Error: ${emailError.response?.status} - ${JSON.stringify(emailError.response?.data || emailError.message)}`;
+        } else if (emailError.message) {
+          console.error('❌ Resend Error Message:', emailError.message);
+        }
+        
+        console.error('❌ Full error details:', {
           error: emailErrorDetails,
+          message: emailError.message,
           stack: emailError.stack,
           name: emailError.name,
+          code: emailError.code,
+          type: typeof emailError,
+          keys: Object.keys(emailError || {}),
         });
         // Continue to log the message even if email fails
       }
