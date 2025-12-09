@@ -26,14 +26,21 @@ By default, form submissions are logged to the console. To receive email notific
    npm install resend
    ```
 
-4. **Create/Update `.env.local` file** in your project root:
+4. **For Local Development - Create/Update `.env.local` file** in your project root:
    ```env
    RESEND_API_KEY=re_your_api_key_here
    CONTACT_EMAIL=your-email@example.com
    RESEND_FROM_EMAIL=Portfolio Contact <onboarding@resend.dev>
    ```
 
-5. **Verify your domain** (optional but recommended):
+5. **For Vercel/Production Deployment - ⚠️ IMPORTANT:**
+   - Environment variables must be set in **Vercel Dashboard**, not just `.env.local`
+   - Go to your Vercel project → Settings → Environment Variables
+   - Add `RESEND_API_KEY`, `CONTACT_EMAIL`, and `RESEND_FROM_EMAIL`
+   - **Redeploy** your application after adding variables
+   - See `VERCEL_SETUP.md` for detailed step-by-step instructions
+
+6. **Verify your domain** (optional but recommended):
    - In Resend dashboard, add and verify your domain
    - Update `RESEND_FROM_EMAIL` to use your verified domain
 
@@ -63,10 +70,18 @@ Uncomment and configure the option you prefer.
 ## Troubleshooting
 
 - **Form not submitting**: Check browser console for errors
-- **No email received**: 
-  - Verify your environment variables are set correctly
+- **No email received (Local)**: 
+  - Verify your environment variables are set correctly in `.env.local`
+  - Restart your development server after creating/updating `.env.local`
   - Check Resend dashboard for email logs
   - Check spam folder
+- **No email received (Vercel/Production)**: 
+  - ⚠️ **Most common issue**: Environment variables not set in Vercel dashboard
+  - Go to Vercel → Settings → Environment Variables
+  - Add `RESEND_API_KEY` and `CONTACT_EMAIL`
+  - **Redeploy** your application (very important!)
+  - Check Vercel Function Logs for error messages
+  - See `VERCEL_SETUP.md` for detailed instructions
 - **TypeScript errors**: Make sure to install `resend` package if using Resend
 
 ## Notes

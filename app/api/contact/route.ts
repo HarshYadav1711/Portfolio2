@@ -51,12 +51,18 @@ export async function POST(request: NextRequest) {
     const hasContactEmail = !!process.env.CONTACT_EMAIL;
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'Portfolio Contact <onboarding@resend.dev>';
     
+    // Determine if we're in production (Vercel) or development
+    const isProduction = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+    const environment = isProduction ? 'PRODUCTION (Vercel)' : 'DEVELOPMENT (Local)';
+    
     console.log('📧 Email Configuration Check:', {
+      environment,
       hasApiKey,
       hasContactEmail,
       fromEmail,
       contactEmail: hasContactEmail ? process.env.CONTACT_EMAIL : 'NOT SET',
       apiKeyPrefix: hasApiKey ? process.env.RESEND_API_KEY?.substring(0, 5) + '...' : 'NOT SET',
+      vercelEnv: process.env.VERCEL ? 'Yes' : 'No',
     });
     
     if (hasApiKey && hasContactEmail) {
@@ -193,10 +199,17 @@ This message was sent from your portfolio contact form.`;
         // Continue to log the message even if email fails
       }
     } else {
-      emailErrorDetails = !hasApiKey 
-        ? 'RESEND_API_KEY is not set in environment variables'
-        : 'CONTACT_EMAIL is not set in environment variables';
-      console.warn('⚠️  Email service not configured:', emailErrorDetails);
+      const missingVar = !hasApiKey ? 'RESEND_API_KEY' : 'CONTACT_EMAIL';
+      emailErrorDetails = `${missingVar} is not set in environment variables`;
+      
+      if (isProduction) {
+        console.error('⚠️  Email service not configured on Vercel:', emailErrorDetails);
+        console.error('📝 To fix: Add environment variables in Vercel dashboard → Settings → Environment Variables');
+        console.error('📝 Then redeploy your application. See VERCEL_SETUP.md for detailed instructions.');
+      } else {
+        console.warn('⚠️  Email service not configured:', emailErrorDetails);
+        console.warn('📝 To fix: Create .env.local file with RESEND_API_KEY and CONTACT_EMAIL');
+      }
     }
 
     // Log the message (always done for backup/debugging)
@@ -214,11 +227,22 @@ This message was sent from your portfolio contact form.`;
       if (emailErrorDetails) {
         console.error('⚠️  Email sending failed:', emailErrorDetails);
       } else if (!process.env.RESEND_API_KEY || !process.env.CONTACT_EMAIL) {
-        console.warn(
-          '⚠️  Email service not configured. Messages are being logged only.\n' +
-          'To enable email notifications, set RESEND_API_KEY and CONTACT_EMAIL in your .env.local file.\n' +
-          'Get a free API key at: https://resend.com'
-        );
+        if (isProduction) {
+          console.error(
+            '⚠️  Email service not configured on Vercel.\n' +
+            '📝 To fix:\n' +
+            '1. Go to Vercel dashboard → Settings → Environment Variables\n' +
+            '2. Add RESEND_API_KEY and CONTACT_EMAIL\n' +
+            '3. Redeploy your application\n' +
+            'See VERCEL_SETUP.md for detailed instructions.'
+          );
+        } else {
+          console.warn(
+            '⚠️  Email service not configured. Messages are being logged only.\n' +
+            'To enable email notifications, set RESEND_API_KEY and CONTACT_EMAIL in your .env.local file.\n' +
+            'Get a free API key at: https://resend.com'
+          );
+        }
       }
     }
 
