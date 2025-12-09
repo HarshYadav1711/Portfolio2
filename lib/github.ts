@@ -117,6 +117,15 @@ async function validateUrl(url: string): Promise<boolean> {
   }
 }
 
+// Available project images in the public folder
+// These will be matched to projects in order (first project gets first image, etc.)
+const PROJECT_IMAGES = [
+  '/Screenshot 2025-12-09 234211.png',
+  '/Screenshot 2025-12-09 234256.png',
+  '/Screenshot 2025-12-09 234320.png',
+  '/Screenshot 2025-12-09 234343.png',
+];
+
 // Convert GitHub repos to Project format
 export async function convertReposToProjects(repos: GitHubRepo[], username: string): Promise<Project[]> {
   // Filter out forks and archived repos, sort by stars and recency
@@ -211,6 +220,11 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
         }
       }
 
+      // Assign image from available project images, or fallback to placeholder
+      const projectImage = index < PROJECT_IMAGES.length 
+        ? PROJECT_IMAGES[index] 
+        : `/project${index + 1}.jpg`;
+
       return {
         title: repo.name
           .split('-')
@@ -218,7 +232,7 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
           .join(' '),
         description: description,
         tech: tech.length > 0 ? tech : ['JavaScript', 'Git'],
-        image: `/project${index + 1}.jpg`, // TODO: Add project screenshots to /public folder (project1.jpg, project2.jpg, etc.)
+        image: projectImage,
         liveUrl: liveUrl,
         githubUrl: repo.html_url,
       };
