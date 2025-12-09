@@ -23,6 +23,11 @@ export default function Contact() {
     email: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({ type: null, message: "" });
 
   useEffect(() => {
     if (isInView && ref.current) {
@@ -47,18 +52,101 @@ export default function Contact() {
     }
   }, [isInView]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // ============================================
-    // PERSONALIZE: Implement your form submission
-    // Options: Formspree, EmailJS, API route, etc.
-    // ============================================
-    // TODO: Implement form submission logic
-    // Example with EmailJS:
-    // emailjs.send('service_id', 'template_id', formData, 'public_key')
-    //   .then(() => alert('Message sent!'))
-    //   .catch(() => alert('Error sending message'));
-    console.log("Form submitted:", formData);
+    
+    // Client-side validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please fill in all fields.",
+      });
+      setTimeout(() => {
+        setSubmitStatus({ type: null, message: "" });
+      }, 5000);
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please enter a valid email address.",
+      });
+      setTimeout(() => {
+        setSubmitStatus({ type: null, message: "" });
+      }, 5000);
+      return;
+    }
+    
+    // Reset previous status
+    setSubmitStatus({ type: null, message: "" });
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          message: formData.message.trim(),
+        }),
+      });
+
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        try {
+          data = await response.json();
+        } catch (jsonError) {
+          // If response is not valid JSON, handle it
+          throw new Error("Invalid response from server. Please try again later.");
+        }
+      } else {
+        // If response is not JSON, read as text
+        const text = await response.text();
+        throw new Error(text || "Invalid response from server. Please try again later.");
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.error || data?.message || "Failed to send message");
+      }
+
+      // Success
+      setSubmitStatus({
+        type: "success",
+        message: data.message || "Your message has been sent successfully!",
+      });
+      
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
+
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus({ type: null, message: "" });
+      }, 5000);
+    } catch (error: any) {
+      console.error("Contact form error:", error);
+      setSubmitStatus({
+        type: "error",
+        message: error.message || "Failed to send message. Please check your connection and try again.",
+      });
+
+      // Clear error message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus({ type: null, message: "" });
+      }, 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -176,19 +264,39 @@ export default function Contact() {
               />
             </div>
 
+            {/* Status Message */}
+            {submitStatus.type && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`p-4 rounded ${
+                  submitStatus.type === "success"
+                    ? "bg-green-500/20 border border-green-500/50 text-green-400"
+                    : "bg-red-500/20 border border-red-500/50 text-red-400"
+                }`}
+              >
+                {submitStatus.message}
+              </motion.div>
+            )}
+
             <motion.button
               type="submit"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full px-8 py-4 bg-accent-yellow text-black font-semibold hover:bg-accent-yellowLight transition-all duration-300 relative overflow-hidden group"
+              disabled={isSubmitting}
+              whileHover={isSubmitting ? {} : { scale: 1.02 }}
+              whileTap={isSubmitting ? {} : { scale: 0.98 }}
+              className="w-full px-8 py-4 bg-accent-yellow text-black font-semibold hover:bg-accent-yellowLight transition-all duration-300 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="relative z-10">Send Message</span>
-              <motion.div
-                className="absolute inset-0 bg-accent-yellowLight"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: 0 }}
-                transition={{ duration: 0.3 }}
-              />
+              <span className="relative z-10">
+                {isSubmitting ? "Sending..." : "Send Message"}
+              </span>
+              {!isSubmitting && (
+                <motion.div
+                  className="absolute inset-0 bg-accent-yellowLight"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+              )}
             </motion.button>
           </motion.form>
         </div>

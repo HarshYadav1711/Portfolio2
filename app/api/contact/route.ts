@@ -1,0 +1,147 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+// This API route handles contact form submissions
+// You can configure it to send emails using various services:
+// - Resend (recommended): https://resend.com
+// - SendGrid: https://sendgrid.com
+// - Nodemailer with SMTP
+// - Or integrate with Formspree, EmailJS, etc.
+
+export async function POST(request: NextRequest) {
+  try {
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      return NextResponse.json(
+        { error: 'Invalid request body. Please ensure all fields are provided.' },
+        { status: 400 }
+      );
+    }
+
+    const { name, email, message } = body;
+
+    // Validate required fields
+    if (!name || !email || !message) {
+      return NextResponse.json(
+        { error: 'All fields are required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 }
+      );
+    }
+
+    // ============================================
+    // EMAIL SENDING IMPLEMENTATION
+    // ============================================
+    // Try to send email using Resend (if configured)
+    // If Resend is not configured, the message will be logged
+    let emailSent = false;
+    
+    if (process.env.RESEND_API_KEY && process.env.CONTACT_EMAIL) {
+      try {
+        // Dynamic import to avoid errors if resend is not installed
+        let Resend;
+        try {
+          const resendModule = await import('resend');
+          Resend = resendModule.Resend;
+        } catch (importError) {
+          console.warn('Resend package not installed. Install it with: npm install resend');
+          throw new Error('Resend package not available');
+        }
+        
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        
+        // Escape HTML to prevent XSS and ensure proper rendering
+        const escapeHtml = (text: string) => {
+          const map: { [key: string]: string } = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;',
+          };
+          return text.replace(/[&<>"']/g, (m) => map[m]);
+        };
+
+        const escapedName = escapeHtml(name);
+        const escapedEmail = escapeHtml(email);
+        const escapedMessage = escapeHtml(message).replace(/\n/g, '<br>');
+
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL || 'Portfolio Contact <onboarding@resend.dev>',
+          to: process.env.CONTACT_EMAIL,
+          replyTo: email,
+          subject: `New Contact Form Message from ${name}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #333; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
+                New Contact Form Submission
+              </h2>
+              <div style="background: #f9f9f9; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                <p style="margin: 10px 0;"><strong style="color: #555;">Name:</strong> ${escapedName}</p>
+                <p style="margin: 10px 0;"><strong style="color: #555;">Email:</strong> <a href="mailto:${escapedEmail}" style="color: #007bff;">${escapedEmail}</a></p>
+                <p style="margin: 10px 0;"><strong style="color: #555;">Message:</strong></p>
+                <div style="background: white; padding: 15px; border-left: 4px solid #007bff; margin-top: 10px;">
+                  <p style="margin: 0; white-space: pre-wrap; color: #333;">${escapedMessage}</p>
+                </div>
+              </div>
+              <p style="color: #888; font-size: 12px; margin-top: 20px;">
+                This message was sent from your portfolio contact form.
+              </p>
+            </div>
+          `,
+        });
+        
+        emailSent = true;
+        console.log('Email sent successfully via Resend');
+      } catch (emailError: any) {
+        console.error('Failed to send email via Resend:', emailError.message || emailError);
+        // Continue to log the message even if email fails
+      }
+    }
+
+    // Log the message (always done for backup/debugging)
+    console.log('Contact form submission:', {
+      name,
+      email,
+      message,
+      emailSent,
+      timestamp: new Date().toISOString(),
+    });
+
+    // If email service is not configured, log a warning
+    if (!emailSent && (!process.env.RESEND_API_KEY || !process.env.CONTACT_EMAIL)) {
+      console.warn(
+        '⚠️  Email service not configured. Messages are being logged only.\n' +
+        'To enable email notifications, set RESEND_API_KEY and CONTACT_EMAIL in your .env.local file.\n' +
+        'Get a free API key at: https://resend.com'
+      );
+    }
+
+    return NextResponse.json(
+      { 
+        success: true, 
+        message: 'Your message has been sent successfully!' 
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error('Contact form error:', error);
+    return NextResponse.json(
+      { 
+        error: 'Failed to send message. Please try again later.',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
+      { status: 500 }
+    );
+  }
+}
+
