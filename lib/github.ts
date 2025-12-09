@@ -126,6 +126,30 @@ const PROJECT_IMAGES = [
   '/Screenshot 2025-12-09 234343.png',
 ];
 
+// Map project names to their specific images
+const getProjectImage = (repoName: string, index: number): string => {
+  const nameLower = repoName.toLowerCase();
+  
+  // Map specific project names to their images
+  if (nameLower.includes('blog') && nameLower.includes('website')) {
+    return '/Blog Website.png';
+  }
+  if (nameLower.includes('pokeslider') || nameLower.includes('poke-slider')) {
+    return '/PokeSlider.png';
+  }
+  if (nameLower.includes('her')) {
+    return '/Her.png';
+  }
+  if (nameLower.includes('portfolio')) {
+    return '/Portfolio.png';
+  }
+  
+  // Fallback to index-based assignment
+  return index < PROJECT_IMAGES.length 
+    ? PROJECT_IMAGES[index] 
+    : `/project${index + 1}.jpg`;
+};
+
 // Convert GitHub repos to Project format
 export async function convertReposToProjects(repos: GitHubRepo[], username: string): Promise<Project[]> {
   // Filter out forks and archived repos, sort by stars and recency
@@ -220,10 +244,8 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
         }
       }
 
-      // Assign image from available project images, or fallback to placeholder
-      const projectImage = index < PROJECT_IMAGES.length 
-        ? PROJECT_IMAGES[index] 
-        : `/project${index + 1}.jpg`;
+      // Assign image based on project name, or fallback to index-based assignment
+      const projectImage = getProjectImage(repo.name, index);
 
       return {
         title: repo.name
