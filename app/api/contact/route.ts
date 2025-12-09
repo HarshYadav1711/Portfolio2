@@ -44,8 +44,22 @@ export async function POST(request: NextRequest) {
     // Try to send email using Resend (if configured)
     // If Resend is not configured, the message will be logged
     let emailSent = false;
+    let emailErrorDetails: string | null = null;
     
-    if (process.env.RESEND_API_KEY && process.env.CONTACT_EMAIL) {
+    // Debug: Check environment variables (without exposing sensitive data)
+    const hasApiKey = !!process.env.RESEND_API_KEY;
+    const hasContactEmail = !!process.env.CONTACT_EMAIL;
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Portfolio Contact <onboarding@resend.dev>';
+    
+    console.log('📧 Email Configuration Check:', {
+      hasApiKey,
+      hasContactEmail,
+      fromEmail,
+      contactEmail: hasContactEmail ? process.env.CONTACT_EMAIL : 'NOT SET',
+      apiKeyPrefix: hasApiKey ? process.env.RESEND_API_KEY?.substring(0, 5) + '...' : 'NOT SET',
+    });
+    
+    if (hasApiKey && hasContactEmail) {
       try {
         // Dynamic import to avoid errors if resend is not installed
         let Resend;
@@ -53,7 +67,7 @@ export async function POST(request: NextRequest) {
           const resendModule = await import('resend');
           Resend = resendModule.Resend;
         } catch (importError) {
-          console.warn('Resend package not installed. Install it with: npm install resend');
+          console.error('❌ Resend package not installed. Install it with: npm install resend');
           throw new Error('Resend package not available');
         }
         
@@ -75,8 +89,8 @@ export async function POST(request: NextRequest) {
         const escapedEmail = escapeHtml(email);
         const escapedMessage = escapeHtml(message).replace(/\n/g, '<br>');
 
-        await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || 'Portfolio Contact <onboarding@resend.dev>',
+        const emailPayload = {
+          from: fromEmail,
           to: process.env.CONTACT_EMAIL,
           replyTo: email,
           subject: `New Contact Form Message from ${name}`,
@@ -98,32 +112,72 @@ export async function POST(request: NextRequest) {
               </p>
             </div>
           `,
+        };
+
+        console.log('📤 Attempting to send email via Resend...', {
+          to: process.env.CONTACT_EMAIL,
+          from: fromEmail,
+          subject: emailPayload.subject,
         });
+
+        const result = await resend.emails.send(emailPayload);
         
-        emailSent = true;
-        console.log('Email sent successfully via Resend');
+        // Check if Resend returned an error in the response
+        if (result.error) {
+          emailErrorDetails = `Resend API error: ${JSON.stringify(result.error)}`;
+          console.error('❌ Resend API returned an error:', result.error);
+          throw new Error(emailErrorDetails);
+        }
+        
+        // Check if we got a valid response with an id
+        if (result.data && result.data.id) {
+          emailSent = true;
+          console.log('✅ Email sent successfully via Resend!', {
+            emailId: result.data.id,
+            to: process.env.CONTACT_EMAIL,
+          });
+        } else {
+          emailErrorDetails = 'Resend returned an unexpected response format';
+          console.error('❌ Unexpected Resend response:', result);
+          throw new Error(emailErrorDetails);
+        }
       } catch (emailError: any) {
-        console.error('Failed to send email via Resend:', emailError.message || emailError);
+        emailErrorDetails = emailError.message || String(emailError);
+        console.error('❌ Failed to send email via Resend:', {
+          error: emailErrorDetails,
+          stack: emailError.stack,
+          name: emailError.name,
+        });
         // Continue to log the message even if email fails
       }
+    } else {
+      emailErrorDetails = !hasApiKey 
+        ? 'RESEND_API_KEY is not set in environment variables'
+        : 'CONTACT_EMAIL is not set in environment variables';
+      console.warn('⚠️  Email service not configured:', emailErrorDetails);
     }
 
     // Log the message (always done for backup/debugging)
-    console.log('Contact form submission:', {
+    console.log('📝 Contact form submission:', {
       name,
       email,
-      message,
+      messageLength: message.length,
       emailSent,
+      emailError: emailErrorDetails,
       timestamp: new Date().toISOString(),
     });
 
-    // If email service is not configured, log a warning
-    if (!emailSent && (!process.env.RESEND_API_KEY || !process.env.CONTACT_EMAIL)) {
-      console.warn(
-        '⚠️  Email service not configured. Messages are being logged only.\n' +
-        'To enable email notifications, set RESEND_API_KEY and CONTACT_EMAIL in your .env.local file.\n' +
-        'Get a free API key at: https://resend.com'
-      );
+    // If email service is not configured or failed, log detailed information
+    if (!emailSent) {
+      if (emailErrorDetails) {
+        console.error('⚠️  Email sending failed:', emailErrorDetails);
+      } else if (!process.env.RESEND_API_KEY || !process.env.CONTACT_EMAIL) {
+        console.warn(
+          '⚠️  Email service not configured. Messages are being logged only.\n' +
+          'To enable email notifications, set RESEND_API_KEY and CONTACT_EMAIL in your .env.local file.\n' +
+          'Get a free API key at: https://resend.com'
+        );
+      }
     }
 
     return NextResponse.json(
