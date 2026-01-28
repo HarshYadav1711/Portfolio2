@@ -81,7 +81,7 @@ export default function Resume() {
           className="flex justify-center gap-4 mb-16 flex-wrap"
         >
           <motion.a
-            href="/resume.pdf" // Update filename if different (e.g., "/my-resume.pdf")
+            href="/Harsh Yadav Resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
@@ -92,8 +92,8 @@ export default function Resume() {
             View Resume
           </motion.a>
           <motion.a
-            href="/resume.pdf" // Update filename if different
-            download
+            href="/Harsh Yadav Resume.pdf"
+            download="Harsh_Yadav_Resume.pdf"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-accent-yellow text-accent-yellow font-semibold hover:bg-accent-yellow hover:text-black transition-all duration-300"
