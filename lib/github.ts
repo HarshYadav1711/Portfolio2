@@ -1,4 +1,6 @@
 // GitHub API utility functions
+import { PRIORITIZED_PROJECTS } from './config';
+
 export interface GitHubRepo {
   id: number;
   name: string;
@@ -155,17 +157,65 @@ const getProjectImage = (repoName: string, index: number): string => {
 
 // Convert GitHub repos to Project format
 export async function convertReposToProjects(repos: GitHubRepo[], username: string): Promise<Project[]> {
-  // Filter out forks and archived repos, sort by stars and recency
-  const filteredRepos = repos
-    .filter(repo => !repo.name.includes('portfolio') && !repo.fork && !repo.archived && !repo.name.includes('test'))
-    .sort((a, b) => {
-      // Sort by stars first, then by update date
-      if (b.stargazers_count !== a.stargazers_count) {
-        return b.stargazers_count - a.stargazers_count;
-      }
-      return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
-    })
-    .slice(0, 6); // Get top 6 projects
+  // Filter out forks and archived repos
+  const filteredRepos = repos.filter(repo => 
+    !repo.name.includes('portfolio') && 
+    !repo.fork && 
+    !repo.archived && 
+    !repo.name.includes('test')
+  );
+
+  // Prioritize AI Agent projects - check name, description, and topics
+  // Also check against explicitly prioritized projects from config
+  const isAIAgentProject = (repo: GitHubRepo): boolean => {
+    const nameLower = repo.name.toLowerCase();
+    const descLower = (repo.description || '').toLowerCase();
+    const topicsLower = repo.topics.map(t => t.toLowerCase());
+    
+    // Check if explicitly prioritized in config
+    const isExplicitlyPrioritized = PRIORITIZED_PROJECTS.some(prioritized => 
+      nameLower.includes(prioritized.toLowerCase())
+    );
+    
+    // Check for AI Agent keywords
+    const hasAIAgentKeywords = (
+      nameLower.includes('ai') && nameLower.includes('agent') ||
+      nameLower.includes('agent') && (nameLower.includes('ai') || descLower.includes('ai')) ||
+      topicsLower.includes('ai-agent') ||
+      topicsLower.includes('ai') && topicsLower.includes('agent') ||
+      descLower.includes('ai agent') ||
+      descLower.includes('artificial intelligence agent')
+    );
+    
+    return isExplicitlyPrioritized || hasAIAgentKeywords;
+  };
+
+  // Separate AI Agent projects from others
+  const aiAgentProjects = filteredRepos.filter(isAIAgentProject);
+  const otherProjects = filteredRepos.filter(repo => !isAIAgentProject(repo));
+
+  // Sort AI Agent projects by recency (most recent first)
+  const sortedAIAgentProjects = aiAgentProjects.sort((a, b) => 
+    new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+  );
+
+  // Sort other projects by stars first, then by update date
+  const sortedOtherProjects = otherProjects.sort((a, b) => {
+    if (b.stargazers_count !== a.stargazers_count) {
+      return b.stargazers_count - a.stargazers_count;
+    }
+    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+  });
+
+  // Combine: AI Agent projects first, then other projects
+  // Take up to 2 AI Agent projects, then fill remaining slots with other projects (max 6 total)
+  const maxAIAgentProjects = Math.min(2, sortedAIAgentProjects.length);
+  const maxOtherProjects = 6 - maxAIAgentProjects;
+  
+  const selectedRepos = [
+    ...sortedAIAgentProjects.slice(0, maxAIAgentProjects),
+    ...sortedOtherProjects.slice(0, maxOtherProjects)
+  ];
 
   // Known problematic projects that should not show live URLs
   // These projects have homepage URLs set but return 404
@@ -178,7 +228,7 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
 
   // Process projects and validate URLs
   const projects = await Promise.all(
-    filteredRepos.map(async (repo, index) => {
+    selectedRepos.map(async (repo, index) => {
       const tech = detectTechStack(repo);
       
       // Generate a better description if none exists
