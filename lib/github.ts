@@ -82,8 +82,43 @@ export async function fetchGitHubRepos(username: string): Promise<GitHubRepo[]> 
       throw new Error(`GitHub API error: ${response.status}`);
     }
 
-    const repos: GitHubRepo[] = await response.json();
-    return repos;
+    const repos: any[] = await response.json();
+    
+    // Map the response to ensure we have the correct structure
+    const mappedRepos: GitHubRepo[] = repos.map((repo: any) => {
+      // Preserve description exactly as GitHub returns it (null, empty string, or actual description)
+      const description = repo.description !== undefined ? repo.description : null;
+      
+      return {
+        id: repo.id,
+        name: repo.name,
+        description: description, // Preserve null, empty string, or actual description
+        html_url: repo.html_url,
+        homepage: repo.homepage || null,
+        language: repo.language || null,
+        topics: repo.topics || [],
+        stargazers_count: repo.stargazers_count || 0,
+        forks_count: repo.forks_count || 0,
+        fork: repo.fork || false,
+        archived: repo.archived || false,
+        created_at: repo.created_at,
+        updated_at: repo.updated_at,
+      };
+    });
+    
+    // Debug: Log descriptions for first few repos to verify they're being fetched
+    if (mappedRepos.length > 0) {
+      console.log('📋 GitHub Repos Descriptions Sample:', 
+        mappedRepos.slice(0, 5).map(r => ({ 
+          name: r.name, 
+          description: r.description || '(no description)',
+          descriptionType: typeof r.description,
+          descriptionLength: r.description ? r.description.length : 0
+        }))
+      );
+    }
+    
+    return mappedRepos;
   } catch (error) {
     console.error('Error fetching GitHub repos:', error);
     return [];
@@ -255,24 +290,21 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
     selectedRepos.map(async (repo, index) => {
       const tech = detectTechStack(repo);
       
-      // Use the GitHub repository description as-is
-      let description = repo.description || '';
+      // Use the GitHub repository description exactly as it appears on GitHub
+      let description = '';
       
-      // Only use fallback if description is completely missing
-      if (!description || description.trim().length === 0) {
+      // Check if description exists and is not null/empty
+      if (repo.description && typeof repo.description === 'string' && repo.description.trim().length > 0) {
+        // Use the actual GitHub description as-is (just trim whitespace)
+        description = repo.description.trim();
+      } else {
+        // Only use fallback if description is truly missing
+        console.warn(`⚠️ No GitHub description found for repo: "${repo.name}". Repo description value:`, repo.description);
         const nameWords = repo.name
           .split(/[-_]/)
           .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
           .join(' ');
         description = `${nameWords} project`;
-      } else {
-        // Use the actual GitHub description, just trim whitespace
-        description = description.trim();
-      }
-
-      // Capitalize first letter only if description exists
-      if (description.length > 0) {
-        description = description.charAt(0).toUpperCase() + description.slice(1);
       }
 
       // Validate homepage URL
