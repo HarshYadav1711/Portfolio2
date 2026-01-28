@@ -255,23 +255,25 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
     selectedRepos.map(async (repo, index) => {
       const tech = detectTechStack(repo);
       
-      // Generate a better description if none exists
+      // Use the GitHub repository description as-is
       let description = repo.description || '';
+      
+      // Only use fallback if description is completely missing
       if (!description || description.trim().length === 0) {
         const nameWords = repo.name
           .split(/[-_]/)
           .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
           .join(' ');
-        description = `A ${nameWords} project showcasing modern development practices and clean architecture.`;
+        description = `${nameWords} project`;
+      } else {
+        // Use the actual GitHub description, just trim whitespace
+        description = description.trim();
       }
 
-      // Enhance short descriptions
-      if (description.length < 60) {
-        description += ` Built with best practices and modern web technologies.`;
+      // Capitalize first letter only if description exists
+      if (description.length > 0) {
+        description = description.charAt(0).toUpperCase() + description.slice(1);
       }
-
-      // Capitalize first letter
-      description = description.charAt(0).toUpperCase() + description.slice(1);
 
       // Validate homepage URL
       let liveUrl = '';
