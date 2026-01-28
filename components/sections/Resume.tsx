@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Download } from "lucide-react";
+import { Download, ExternalLink } from "lucide-react";
 
 export default function Resume() {
   const ref = useRef<HTMLDivElement>(null);
@@ -69,22 +69,34 @@ export default function Resume() {
           Resume
         </motion.h2>
 
-        {/* Download Button */}
+        {/* Resume Actions */}
         {/* ============================================
-            PERSONALIZE: Add your resume PDF file
+            PERSONALIZE: Add your resume PDF file to /public folder
+            Update the filename below if your resume has a different name
             ============================================ */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="flex justify-center mb-16"
+          className="flex justify-center gap-4 mb-16 flex-wrap"
         >
           <motion.a
-            href="/resume.pdf" // TODO: Add your resume PDF to /public folder and update filename
-            download
+            href="/resume.pdf" // Update filename if different (e.g., "/my-resume.pdf")
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 px-8 py-4 bg-accent-yellow text-black font-semibold hover:bg-accent-yellowLight transition-all duration-300"
+          >
+            <ExternalLink className="w-5 h-5" />
+            View Resume
+          </motion.a>
+          <motion.a
+            href="/resume.pdf" // Update filename if different
+            download
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-accent-yellow text-accent-yellow font-semibold hover:bg-accent-yellow hover:text-black transition-all duration-300"
           >
             <Download className="w-5 h-5" />
             Download Resume
