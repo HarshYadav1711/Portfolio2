@@ -11,8 +11,19 @@ export const GITHUB_USERNAME = "HarshYadav1711"; // TODO: Replace with your actu
 // Add repository names (exact match or partial match) that should be prioritized
 // These projects will appear first in your portfolio
 export const PRIORITIZED_PROJECTS: string[] = [
+  // QPS project - will be prioritized and shown first
+  "qps",
   // Add your AI Agent project names here (case-insensitive matching)
   // Example: "ai-agent-project", "my-ai-agent", etc.
   // Leave empty if you want automatic detection based on keywords
+];
+
+// ============================================
+// EXCLUDED PROJECTS: Projects to hide from portfolio
+// ============================================
+// Add repository names that should be excluded from the portfolio
+export const EXCLUDED_PROJECTS: string[] = [
+  "clinic-tracker",
+  "clinic",
 ];
 

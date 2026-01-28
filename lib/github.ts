@@ -1,5 +1,5 @@
 // GitHub API utility functions
-import { PRIORITIZED_PROJECTS } from './config';
+import { PRIORITIZED_PROJECTS, EXCLUDED_PROJECTS } from './config';
 
 export interface GitHubRepo {
   id: number;
@@ -133,6 +133,9 @@ const getProjectImage = (repoName: string, index: number): string => {
   const nameLower = repoName.toLowerCase();
   
   // Map specific project names to their images
+  if (nameLower.includes('qps')) {
+    return '/QPS.png'; // QPS project image (add this image to public folder if you have one)
+  }
   if (nameLower === '1' || nameLower.trim() === '1') {
     return '/1.png';
   }
@@ -157,22 +160,32 @@ const getProjectImage = (repoName: string, index: number): string => {
 
 // Convert GitHub repos to Project format
 export async function convertReposToProjects(repos: GitHubRepo[], username: string): Promise<Project[]> {
-  // Filter out forks and archived repos
-  const filteredRepos = repos.filter(repo => 
-    !repo.name.includes('portfolio') && 
-    !repo.fork && 
-    !repo.archived && 
-    !repo.name.includes('test')
-  );
+  // Filter out forks, archived repos, and excluded projects
+  const filteredRepos = repos.filter(repo => {
+    const nameLower = repo.name.toLowerCase();
+    
+    // Check if project is explicitly excluded
+    const isExcluded = EXCLUDED_PROJECTS.some(excluded => 
+      nameLower.includes(excluded.toLowerCase())
+    );
+    
+    // Standard filters
+    const isStandardFiltered = 
+      repo.name.includes('portfolio') || 
+      repo.fork || 
+      repo.archived || 
+      repo.name.includes('test');
+    
+    return !isExcluded && !isStandardFiltered;
+  });
 
-  // Prioritize AI Agent projects - check name, description, and topics
-  // Also check against explicitly prioritized projects from config
-  const isAIAgentProject = (repo: GitHubRepo): boolean => {
+  // Check if project is prioritized (AI Agent projects or explicitly prioritized)
+  const isPrioritizedProject = (repo: GitHubRepo): boolean => {
     const nameLower = repo.name.toLowerCase();
     const descLower = (repo.description || '').toLowerCase();
     const topicsLower = repo.topics.map(t => t.toLowerCase());
     
-    // Check if explicitly prioritized in config
+    // Check if explicitly prioritized in config (includes QPS and AI Agent projects)
     const isExplicitlyPrioritized = PRIORITIZED_PROJECTS.some(prioritized => 
       nameLower.includes(prioritized.toLowerCase())
     );
@@ -190,14 +203,25 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
     return isExplicitlyPrioritized || hasAIAgentKeywords;
   };
 
-  // Separate AI Agent projects from others
-  const aiAgentProjects = filteredRepos.filter(isAIAgentProject);
-  const otherProjects = filteredRepos.filter(repo => !isAIAgentProject(repo));
+  // Separate prioritized projects (QPS, AI Agents) from others
+  const prioritizedProjects = filteredRepos.filter(isPrioritizedProject);
+  const otherProjects = filteredRepos.filter(repo => !isPrioritizedProject(repo));
 
-  // Sort AI Agent projects by recency (most recent first)
-  const sortedAIAgentProjects = aiAgentProjects.sort((a, b) => 
-    new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-  );
+  // Sort prioritized projects - QPS first, then AI Agent projects, then by recency
+  const sortedPrioritizedProjects = prioritizedProjects.sort((a, b) => {
+    const aNameLower = a.name.toLowerCase();
+    const bNameLower = b.name.toLowerCase();
+    
+    // QPS projects get highest priority
+    const aIsQPS = aNameLower.includes('qps');
+    const bIsQPS = bNameLower.includes('qps');
+    
+    if (aIsQPS && !bIsQPS) return -1;
+    if (!aIsQPS && bIsQPS) return 1;
+    
+    // Then sort by recency
+    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+  });
 
   // Sort other projects by stars first, then by update date
   const sortedOtherProjects = otherProjects.sort((a, b) => {
@@ -207,13 +231,13 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
 
-  // Combine: AI Agent projects first, then other projects
-  // Take up to 2 AI Agent projects, then fill remaining slots with other projects (max 6 total)
-  const maxAIAgentProjects = Math.min(2, sortedAIAgentProjects.length);
-  const maxOtherProjects = 6 - maxAIAgentProjects;
+  // Combine: Prioritized projects first (QPS + AI Agents), then other projects
+  // Take up to 3 prioritized projects (to ensure QPS shows), then fill remaining slots (max 6 total)
+  const maxPrioritizedProjects = Math.min(3, sortedPrioritizedProjects.length);
+  const maxOtherProjects = 6 - maxPrioritizedProjects;
   
   const selectedRepos = [
-    ...sortedAIAgentProjects.slice(0, maxAIAgentProjects),
+    ...sortedPrioritizedProjects.slice(0, maxPrioritizedProjects),
     ...sortedOtherProjects.slice(0, maxOtherProjects)
   ];
 
