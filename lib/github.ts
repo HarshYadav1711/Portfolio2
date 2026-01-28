@@ -69,56 +69,34 @@ const detectTechStack = (repo: GitHubRepo): string[] => {
   return [...new Set(tech)]; // Remove duplicates
 };
 
-// Fetch repositories from GitHub
+// Fetch repositories from GitHub using server-side API route
+// This ensures we get complete data including descriptions and avoids CORS issues
 export async function fetchGitHubRepos(username: string): Promise<GitHubRepo[]> {
   try {
-    const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`, {
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-      },
+    // Use server-side API route instead of direct GitHub API call
+    const response = await fetch(`/api/github-repos?username=${encodeURIComponent(username)}`, {
+      cache: 'no-store', // Ensure fresh data
     });
 
     if (!response.ok) {
       throw new Error(`GitHub API error: ${response.status}`);
     }
 
-    const repos: any[] = await response.json();
+    const repos: GitHubRepo[] = await response.json();
     
-    // Map the response to ensure we have the correct structure
-    const mappedRepos: GitHubRepo[] = repos.map((repo: any) => {
-      // Preserve description exactly as GitHub returns it (null, empty string, or actual description)
-      const description = repo.description !== undefined ? repo.description : null;
-      
-      return {
-        id: repo.id,
-        name: repo.name,
-        description: description, // Preserve null, empty string, or actual description
-        html_url: repo.html_url,
-        homepage: repo.homepage || null,
-        language: repo.language || null,
-        topics: repo.topics || [],
-        stargazers_count: repo.stargazers_count || 0,
-        forks_count: repo.forks_count || 0,
-        fork: repo.fork || false,
-        archived: repo.archived || false,
-        created_at: repo.created_at,
-        updated_at: repo.updated_at,
-      };
-    });
-    
-    // Debug: Log descriptions for first few repos to verify they're being fetched
-    if (mappedRepos.length > 0) {
-      console.log('📋 GitHub Repos Descriptions Sample:', 
-        mappedRepos.slice(0, 5).map(r => ({ 
+    // Log descriptions for debugging
+    if (repos.length > 0) {
+      console.log('📋 Fetched GitHub Repos - Descriptions Sample:', 
+        repos.slice(0, 6).map(r => ({ 
           name: r.name, 
-          description: r.description || '(no description)',
+          description: r.description || '(null/empty)',
           descriptionType: typeof r.description,
           descriptionLength: r.description ? r.description.length : 0
         }))
       );
     }
     
-    return mappedRepos;
+    return repos;
   } catch (error) {
     console.error('Error fetching GitHub repos:', error);
     return [];
@@ -293,18 +271,22 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
       // Use the GitHub repository description exactly as it appears on GitHub
       let description = '';
       
+      // Use the GitHub repository description exactly as it appears on GitHub
       // Check if description exists and is not null/empty
       if (repo.description && typeof repo.description === 'string' && repo.description.trim().length > 0) {
         // Use the actual GitHub description as-is (just trim whitespace)
         description = repo.description.trim();
-      } else {
+      } else if (repo.description === null || repo.description === undefined || repo.description === '') {
         // Only use fallback if description is truly missing
-        console.warn(`⚠️ No GitHub description found for repo: "${repo.name}". Repo description value:`, repo.description);
+        console.warn(`⚠️ No GitHub description found for repo: "${repo.name}". Value:`, repo.description);
         const nameWords = repo.name
           .split(/[-_]/)
           .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
           .join(' ');
         description = `${nameWords} project`;
+      } else {
+        // Fallback for any other case
+        description = String(repo.description).trim() || `${repo.name} project`;
       }
 
       // Validate homepage URL
