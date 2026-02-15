@@ -1,5 +1,5 @@
 // GitHub API utility functions
-import { PRIORITIZED_PROJECTS, EXCLUDED_PROJECTS } from './config';
+import { PRIORITIZED_PROJECTS, EXCLUDED_PROJECTS, PROJECT_DISPLAY_NAMES, FEATURED_PROJECT_ORDER } from './config';
 
 export interface GitHubRepo {
   id: number;
@@ -220,19 +220,18 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
   const prioritizedProjects = filteredRepos.filter(isPrioritizedProject);
   const otherProjects = filteredRepos.filter(repo => !isPrioritizedProject(repo));
 
-  // Sort prioritized projects - QPS first, then AI Agent projects, then by recency
+  // Sort prioritized projects by FEATURED_PROJECT_ORDER, then by recency
+  const getOrderIndex = (repoName: string) => {
+    const nameLower = repoName.toLowerCase();
+    const idx = FEATURED_PROJECT_ORDER.findIndex(key => nameLower.includes(key));
+    return idx >= 0 ? idx : FEATURED_PROJECT_ORDER.length;
+  };
+  
   const sortedPrioritizedProjects = prioritizedProjects.sort((a, b) => {
-    const aNameLower = a.name.toLowerCase();
-    const bNameLower = b.name.toLowerCase();
-    
-    // QPS projects get highest priority
-    const aIsQPS = aNameLower.includes('qps');
-    const bIsQPS = bNameLower.includes('qps');
-    
-    if (aIsQPS && !bIsQPS) return -1;
-    if (!aIsQPS && bIsQPS) return 1;
-    
-    // Then sort by recency
+    const orderA = getOrderIndex(a.name);
+    const orderB = getOrderIndex(b.name);
+    if (orderA !== orderB) return orderA - orderB;
+    // Same order group: sort by recency
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
 
@@ -244,10 +243,11 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
 
-  // Combine: Prioritized projects first (QPS + AI Agents), then other projects
-  // Take up to 3 prioritized projects (to ensure QPS shows), then fill remaining slots (max 6 total)
-  const maxPrioritizedProjects = Math.min(3, sortedPrioritizedProjects.length);
-  const maxOtherProjects = 6 - maxPrioritizedProjects;
+  // Combine: Prioritized projects first (QPS, dashboards, AI Agents), then other projects
+  // Show up to 8 prioritized so we include QPS + 3 dashboard projects + AI agents, then fill to 8 total
+  const maxTotal = 8;
+  const maxPrioritizedProjects = Math.min(8, sortedPrioritizedProjects.length);
+  const maxOtherProjects = Math.max(0, maxTotal - maxPrioritizedProjects);
   
   const selectedRepos = [
     ...sortedPrioritizedProjects.slice(0, maxPrioritizedProjects),
@@ -340,11 +340,18 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
       // Assign image based on project name, or fallback to index-based assignment
       const projectImage = getProjectImage(repo.name, index);
 
+      // Use custom display name if configured, otherwise format repo name
+      const nameLower = repo.name.toLowerCase();
+      const customTitle = Object.keys(PROJECT_DISPLAY_NAMES).find(key => nameLower.includes(key));
+      const title = customTitle
+        ? PROJECT_DISPLAY_NAMES[customTitle]
+        : repo.name
+            .split(/[-_]/)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+
       return {
-        title: repo.name
-          .split('-')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' '),
+        title,
         description: description,
         tech: tech.length > 0 ? tech : ['JavaScript', 'Git'],
         image: projectImage,
