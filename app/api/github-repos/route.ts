@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force dynamic rendering (required when using searchParams)
+// Prevents "Dynamic server usage" error on Vercel build
+export const dynamic = 'force-dynamic';
+
 // Server-side GitHub API route to fetch repositories
 // This avoids CORS issues and ensures we get complete data including descriptions
 
