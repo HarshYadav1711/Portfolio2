@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Github, Linkedin, Instagram, Mail } from "lucide-react";
+import { Github, Linkedin, Mail } from "lucide-react";
 import gsap from "gsap";
 
 // ============================================
@@ -11,7 +11,6 @@ import gsap from "gsap";
 const socialLinks = [
   { icon: Github, url: "https://github.com/HarshYadav1711", label: "GitHub" },
   { icon: Linkedin, url: "https://www.linkedin.com/in/harsh-yadav-20032010am/", label: "LinkedIn" },
-  { icon: Instagram, url: "https://www.instagram.com/____.harsh__/", label: "Instagram" },
   { icon: Mail, url: "mailto:harshyadav.20032010@gmail.com", label: "Email" },
 ];
 
