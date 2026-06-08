@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 import {
   Briefcase,
   Download,
@@ -52,9 +52,200 @@ const QUICK_FACTS = [
   },
 ] as const;
 
+type ExploringItem = (typeof CURRENTLY_EXPLORING)[number];
+
+function ExploringCard({
+  item,
+  index,
+  isInView,
+  isActive,
+  isTouchDevice,
+  prefersReducedMotion,
+  onActivate,
+  onDeactivate,
+  onToggle,
+  cardRef,
+  groupRef,
+}: {
+  item: ExploringItem;
+  index: number;
+  isInView: boolean;
+  isActive: boolean;
+  isTouchDevice: boolean;
+  prefersReducedMotion: boolean;
+  onActivate: (index: number) => void;
+  onDeactivate: () => void;
+  onToggle: (index: number) => void;
+  cardRef: (el: HTMLDivElement | null) => void;
+  groupRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const panelId = `exploring-focus-${index}`;
+  const transition = prefersReducedMotion
+    ? { duration: 0 }
+    : { duration: 0.25, ease: [0.4, 0, 0.2, 1] as const };
+
+  const handlePointerEnter = () => {
+    if (!isTouchDevice) onActivate(index);
+  };
+
+  const handlePointerLeave = () => {
+    if (!isTouchDevice) onDeactivate();
+  };
+
+  const handleClick = () => {
+    if (isTouchDevice) onToggle(index);
+  };
+
+  const handleFocus = () => onActivate(index);
+
+  const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    if (!groupRef.current?.contains(event.relatedTarget as Node)) {
+      onDeactivate();
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onToggle(index);
+    } else if (event.key === "Escape") {
+      onDeactivate();
+      event.currentTarget.blur();
+    }
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      role="button"
+      tabIndex={0}
+      aria-label={`${item.title} — ${item.description}`}
+      aria-expanded="false"
+      aria-describedby={isActive ? panelId : undefined}
+      onMouseEnter={handlePointerEnter}
+      onMouseLeave={handlePointerLeave}
+      onClick={handleClick}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      initial={{ opacity: 0, y: 30 }}
+      animate={
+        isInView
+          ? {
+              opacity: 1,
+              y: 0,
+              scale: isActive && !prefersReducedMotion ? 1.02 : 1,
+            }
+          : {}
+      }
+      transition={{
+        opacity: { duration: 0.8, delay: 0.25 + index * 0.05 },
+        y: { duration: 0.8, delay: 0.25 + index * 0.05 },
+        scale: { duration: prefersReducedMotion ? 0 : 0.2 },
+      }}
+      className={`exploring-card group relative p-5 bg-background border border-gray-800 hover:border-accent-yellow/50 transition-all duration-300 outline-none focus-visible:ring-1 focus-visible:ring-accent-yellow/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background-light ${
+        isTouchDevice ? "cursor-pointer" : "cursor-default"
+      } ${isActive ? "border-accent-yellow/50" : ""}`}
+    >
+      <div className="absolute inset-0 border border-accent-yellow/0 group-hover:border-accent-yellow/30 transition-all duration-300 pointer-events-none" />
+      <h4 className="text-base font-semibold text-white mb-2 group-hover:text-accent-yellow transition-colors">
+        {item.title}
+      </h4>
+      <p className="text-gray-500 text-xs leading-relaxed">{item.description}</p>
+
+      <AnimatePresence initial={false}>
+        {isActive && (
+          <motion.div
+            id={panelId}
+            role="region"
+            aria-live="polite"
+            initial={
+              prefersReducedMotion
+                ? { opacity: 1, height: "auto" }
+                : { opacity: 0, height: 0 }
+            }
+            animate={{ opacity: 1, height: "auto" }}
+            exit={
+              prefersReducedMotion
+                ? { opacity: 0, height: 0 }
+                : { opacity: 0, height: 0 }
+            }
+            transition={transition}
+            className="overflow-hidden"
+          >
+            <div className="pt-3 mt-3 border-t border-gray-800/80">
+              <p className="text-xs font-mono uppercase tracking-wider text-accent-yellow mb-2">
+                Current Focus
+              </p>
+              <ul className="space-y-1">
+                {item.focusAreas.map((area) => (
+                  <li
+                    key={area}
+                    className="text-gray-500 text-xs leading-relaxed flex gap-2"
+                  >
+                    <span className="text-accent-yellow/70 shrink-0">•</span>
+                    <span>{area}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
 export default function QuickFacts() {
   const ref = useRef<HTMLDivElement>(null);
+  const exploringCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const exploringGroupRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [activeExploringIndex, setActiveExploringIndex] = useState<number | null>(
+    null
+  );
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const touchQuery = window.matchMedia("(hover: none) and (pointer: coarse)");
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const syncTouch = () => setIsTouchDevice(touchQuery.matches);
+    const syncMotion = () => setPrefersReducedMotion(motionQuery.matches);
+
+    syncTouch();
+    syncMotion();
+
+    touchQuery.addEventListener("change", syncTouch);
+    motionQuery.addEventListener("change", syncMotion);
+
+    return () => {
+      touchQuery.removeEventListener("change", syncTouch);
+      motionQuery.removeEventListener("change", syncMotion);
+    };
+  }, []);
+
+  useEffect(() => {
+    exploringCardRefs.current.forEach((el, index) => {
+      el?.setAttribute(
+        "aria-expanded",
+        activeExploringIndex === index ? "true" : "false"
+      );
+    });
+  }, [activeExploringIndex]);
+
+  const activateExploring = useCallback((index: number) => {
+    setActiveExploringIndex(index);
+  }, []);
+
+  const deactivateExploring = useCallback(() => {
+    setActiveExploringIndex(null);
+  }, []);
+
+  const toggleExploring = useCallback((index: number) => {
+    setActiveExploringIndex((prev) => (prev === index ? null : index));
+  }, []);
 
   useEffect(() => {
     if (isInView && ref.current) {
@@ -145,21 +336,27 @@ export default function QuickFacts() {
           <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center text-accent-yellow">
             Currently Exploring
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div
+            ref={exploringGroupRef}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
             {CURRENTLY_EXPLORING.map((item, index) => (
-              <motion.div
+              <ExploringCard
                 key={item.title}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.8, delay: 0.25 + index * 0.05 }}
-                className="exploring-card group relative p-5 bg-background border border-gray-800 hover:border-accent-yellow/50 transition-all duration-300"
-              >
-                <div className="absolute inset-0 border border-accent-yellow/0 group-hover:border-accent-yellow/30 transition-all duration-300 pointer-events-none" />
-                <h4 className="text-base font-semibold text-white mb-2 group-hover:text-accent-yellow transition-colors">
-                  {item.title}
-                </h4>
-                <p className="text-gray-500 text-xs leading-relaxed">{item.description}</p>
-              </motion.div>
+                item={item}
+                index={index}
+                isInView={isInView}
+                isActive={activeExploringIndex === index}
+                isTouchDevice={isTouchDevice}
+                prefersReducedMotion={prefersReducedMotion}
+                onActivate={activateExploring}
+                onDeactivate={deactivateExploring}
+                onToggle={toggleExploring}
+                cardRef={(el) => {
+                  exploringCardRefs.current[index] = el;
+                }}
+                groupRef={exploringGroupRef}
+              />
             ))}
           </div>
         </motion.div>

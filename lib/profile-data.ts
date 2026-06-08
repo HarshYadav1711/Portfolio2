@@ -36,18 +36,42 @@ export const CURRENTLY_EXPLORING = [
   {
     title: "AI Applications",
     description: "ML features and GenAI-assisted workflows in production apps.",
+    focusAreas: [
+      "Deep learning pipelines",
+      "FastAPI model serving",
+      "Retrieval-augmented workflows",
+      "Practical AI product features",
+    ],
   },
   {
     title: "Full Stack Systems",
     description: "End-to-end delivery: React, Node.js, API-first architecture.",
+    focusAreas: [
+      "React + TypeScript frontends",
+      "Backend APIs and services",
+      "PostgreSQL-backed applications",
+      "End-to-end product development",
+    ],
   },
   {
     title: "Scalable Architecture",
     description: "Auth flows, data layers, and services beyond demo scope.",
+    focusAreas: [
+      "Service boundaries",
+      "Authentication systems",
+      "Data modeling",
+      "Reliability and maintainability",
+    ],
   },
   {
     title: "Modern Web Engineering",
     description: "TypeScript, component design, performance-minded frontend patterns.",
+    focusAreas: [
+      "Type-safe development",
+      "Accessibility",
+      "Performance optimization",
+      "Reusable component systems",
+    ],
   },
 ] as const;
 
