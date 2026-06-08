@@ -26,7 +26,7 @@ const RESUME_INSIGHTS: Record<
 > = {
   "climaterisk-sentinel": {
     problem:
-      "Assess climate-related geospatial risk for defined areas using open satellite data.",
+      "Infrastructure risk review needs AOI-scoped satellite analysis without hosting full raster archives — requires splitting map UI from server-side fetch, reprojection, and index computation.",
     keyFeatures: [
       "AOI-based infrastructure analysis with validation workflows",
       "NDVI, NDWI, and NDBI raster analytics pipelines",
@@ -35,25 +35,25 @@ const RESUME_INSIGHTS: Record<
       "Microsoft Planetary Computer STAC API integration",
     ],
     technicalHighlights: [
-      "React + TypeScript frontend with component-driven map UI",
-      "FastAPI backend exposing geospatial analysis endpoints",
-      "PostGIS for spatial storage and AOI-based queries",
-      "GeoPandas, Rasterio, and Shapely for raster/vector processing",
+      "React/TypeScript map client; geospatial work isolated in FastAPI services",
+      "PostGIS spatial storage and indexed AOI boundary queries",
+      "GeoPandas, Rasterio, and Shapely: reproject, clip to AOI, compute indices server-side",
+      "Planetary Computer STAC: fetch only tiles required per analysis request",
     ],
     engineeringChallenge:
-      "Aligned heterogeneous satellite rasters across projections and resolutions via reprojection pipelines and AOI-scoped GeoPandas/Rasterio processing.",
+      "Source tiles arrive in mixed CRS and resolutions — added a server-side reproject-and-clip step before index math so API responses stay consistent regardless of upstream tile format.",
     contribution:
       "End-to-end platform: STAC ingestion, raster analytics, API layer, GIS dashboard.",
     outcomes: [
-      "NDVI, NDWI, and NDBI analysis within validated AOIs.",
-      "Heuristic climate-risk scoring with infrastructure proximity metrics.",
-      "Interactive map exploration with temporal analysis on Leaflet.",
-      "On-demand raster ingestion via Planetary Computer STAC APIs.",
+      "FastAPI returns NDVI, NDWI, and NDBI for validated AOIs without pre-downloading full catalogs",
+      "PostGIS holds AOI boundaries; clients read results through a fixed REST contract",
+      "Leaflet renders layers from API payloads — raster I/O stays off the browser",
+      "STAC requests pull only the scenes needed for each run, not entire collections",
     ],
   },
   "ai_based_galaxy_morphology_classifier": {
     problem:
-      "Manual galaxy morphology labeling does not scale across large survey datasets.",
+      "Survey-scale galaxy labeling needs repeatable batch runs — training, evaluation, and inference must be separate entry points with saved checkpoints, not one-off notebook execution.",
     keyFeatures: [
       "Spiral, Elliptical, and Irregular classification pipeline",
       "SDSS and Galaxy Zoo dataset ingestion and preprocessing",
@@ -62,25 +62,25 @@ const RESUME_INSIGHTS: Record<
       "Deployment-ready batch inference pipeline",
     ],
     technicalHighlights: [
-      "PyTorch CNN models with configurable training loops",
-      "Python preprocessing and augmentation pipeline",
-      "Structured evaluation metrics for morphology classes",
-      "Modular inference path for scalable prediction",
+      "PyTorch training module: configurable epochs, augmentation, checkpoint writes",
+      "Shared Python preprocessing pipeline for training and inference scripts",
+      "Evaluation step records per-class metrics before a checkpoint is used for inference",
+      "Inference entry point loads weights from disk — no training deps at predict time",
     ],
     engineeringChallenge:
-      "Balanced accuracy and training efficiency via lightweight CNN, augmentation, and reproducible checkpointing.",
+      "Full-dataset CNN training was too slow to iterate on — kept a lightweight architecture, fixed augmentation, and checkpoint resume so experiments and batch inference share one weight file.",
     contribution:
       "Full ML workflow: dataset prep, training, evaluation, inference-ready deployment scripts.",
     outcomes: [
-      "Automated Spiral, Elliptical, and Irregular labeling from survey imagery.",
-      "Reproducible preprocessing-to-training on SDSS and Galaxy Zoo data.",
-      "Batch prediction via deployment-ready inference scripts.",
-      "Per-class metrics for comparing checkpoints during training.",
+      "Training writes checkpoints and per-class metrics for reproducible reruns",
+      "Preprocessing normalizes SDSS and Galaxy Zoo inputs before each training job",
+      "Batch inference script classifies imagery from a saved checkpoint without retraining",
+      "Spiral, Elliptical, and Irregular labels produced through the same inference path",
     ],
   },
   applynest: {
     problem:
-      "No single system to track applications across stages and extract requirements from job descriptions.",
+      "Application tracking needs per-user persistence in MongoDB and JD parsing that returns the same field shape when external AI endpoints are unavailable — requires auth-gated REST routes and a non-AI parser path.",
     keyFeatures: [
       "JWT-authenticated user accounts and protected routes",
       "Kanban-style application pipeline with drag-and-drop",
@@ -89,25 +89,25 @@ const RESUME_INSIGHTS: Record<
       "Resume bullet generation from parsed JD data",
     ],
     technicalHighlights: [
-      "React + TypeScript SPA with schema-validated forms",
-      "Express.js REST API with JWT middleware",
-      "MongoDB for persistent application state",
-      "Modular parsing layer with validation and fallback logic",
+      "Express REST API with JWT middleware on protected routes",
+      "MongoDB schemas for applications, pipeline stages, and parsed JD fields per user",
+      "Parsing module enforces one output schema for AI and deterministic fallback paths",
+      "React/TypeScript client submits schema-validated requests against fixed API contracts",
     ],
     engineeringChallenge:
-      "Reliable JD parsing without external AI APIs—deterministic fallback keeps parsing and bullet generation working offline.",
+      "External AI parsers fail or rate-limit without warning — built a deterministic fallback that writes the same document shape so MongoDB updates and form state do not depend on which parser ran.",
     contribution:
       "Full stack: auth, Kanban UI, REST API, MongoDB schemas, AI-assisted parsing with offline fallback.",
     outcomes: [
-      "Kanban pipeline tracking across application stages.",
-      "Structured JD extraction via AI parsing with offline fallback.",
-      "Per-user records behind JWT-authenticated REST endpoints.",
-      "Resume bullets generated from parsed requirement data.",
+      "JWT-checked Express routes gate reads and writes to per-user application documents",
+      "Kanban stage changes persist via REST; client state reloads from API responses",
+      "JD parsing falls back to rule-based extraction when AI calls fail, keeping forms populated",
+      "Resume bullets generated from parsed fields stored in MongoDB, not client-only state",
     ],
   },
   primetrade: {
     problem:
-      "Crypto traders need position tracking, automated P&L, and portfolio analytics in one system.",
+      "Trade logging and P&L require concurrent API handlers that do not block on database I/O, plus row-level isolation per authenticated user in PostgreSQL — needs async DB access and a containerized run configuration.",
     keyFeatures: [
       "JWT-authenticated trade and position logging",
       "Automated P&L calculations per position",
@@ -116,21 +116,20 @@ const RESUME_INSIGHTS: Record<
       "Docker Compose deployment for local/production parity",
     ],
     technicalHighlights: [
-      "FastAPI async REST API with structured exception handling",
-      "Async SQLAlchemy ORM for non-blocking database access",
-      "PostgreSQL for transactional trade and portfolio data",
-      "React frontend consuming typed API endpoints",
-      "Dockerized multi-service architecture",
+      "FastAPI async handlers with async SQLAlchemy sessions for PostgreSQL I/O",
+      "P&L and portfolio aggregates computed in the service layer from position rows",
+      "JWT auth; repository queries include user ID in WHERE clauses on every read/write",
+      "Docker Compose defines API, database, and frontend services for repeatable deployment",
     ],
     engineeringChallenge:
-      "Fast async DB access with per-user isolation—async SQLAlchemy, scoped queries, modular backend.",
+      "Synchronous ORM calls would stall concurrent trade requests — moved to async SQLAlchemy and scoped every trade query to the authenticated user ID to prevent cross-account reads.",
     contribution:
       "Async API, auth layer, P&L analytics engine, React client, Docker Compose setup.",
     outcomes: [
-      "Automated per-position P&L from logged trade entries.",
-      "Portfolio summaries via async FastAPI endpoints.",
-      "Per-user isolation for trade and position records in PostgreSQL.",
-      "Docker Compose for reproducible local and containerized runs.",
+      "Async endpoints serve trade and portfolio data without blocking the event loop on DB calls",
+      "Per-position P&L derived from logged entries stored under transactional PostgreSQL writes",
+      "Portfolio summaries exposed through the same FastAPI service that handles auth and trades",
+      "Docker Compose runs the full stack locally and in containers with identical service definitions",
     ],
   },
 };
