@@ -4,6 +4,7 @@ import { RESUME_PROJECT_DETAILS } from "./config";
 export interface ProjectInsights {
   problem: string;
   keyFeatures: string[];
+  outcomes: string[];
   technicalHighlights: string[];
   engineeringChallenge: string;
   contribution: string;
@@ -43,6 +44,12 @@ const RESUME_INSIGHTS: Record<
       "Aligning heterogeneous satellite rasters across projections and resolutions — solved with spatial reprojection pipelines and consistent AOI-based processing in GeoPandas/Rasterio.",
     contribution:
       "Built the end-to-end platform: STAC data ingestion, raster analytics workflows, API layer, and interactive GIS dashboard.",
+    outcomes: [
+      "Supports spatial analysis across NDVI, NDWI, and NDBI satellite-derived layers within validated AOIs.",
+      "Delivers heuristic climate-risk scoring with infrastructure proximity metrics for a defined area.",
+      "Enables interactive map-based exploration with temporal analysis on Leaflet dashboards.",
+      "Ingests open raster catalogs on demand through Microsoft Planetary Computer STAC APIs.",
+    ],
   },
   "ai_based_galaxy_morphology_classifier": {
     problem:
@@ -64,6 +71,12 @@ const RESUME_INSIGHTS: Record<
       "Balancing model accuracy with training efficiency on survey-scale data — addressed with a lightweight CNN, augmentation strategy, and reproducible checkpointing.",
     contribution:
       "Implemented the full ML workflow from dataset preparation through model training, evaluation, and inference-ready deployment scripts.",
+    outcomes: [
+      "Automates morphology labeling into Spiral, Elliptical, and Irregular classes from survey imagery.",
+      "Runs a reproducible preprocessing-to-training workflow on SDSS and Galaxy Zoo datasets.",
+      "Supports batch prediction through deployment-ready inference scripts.",
+      "Tracks per-class evaluation metrics for comparing model checkpoints during training.",
+    ],
   },
   applynest: {
     problem:
@@ -85,6 +98,12 @@ const RESUME_INSIGHTS: Record<
       "Keeping JD parsing reliable when external AI APIs are unavailable — implemented deterministic fallback logic so parsing and bullet generation still work offline.",
     contribution:
       "Delivered the full stack: auth, Kanban workflow UI, REST API, MongoDB schemas, and the AI-assisted parsing layer with fallback behavior.",
+    outcomes: [
+      "Consolidates job application tracking across drag-and-drop Kanban pipeline stages.",
+      "Extracts structured fields from job descriptions with AI-assisted parsing and deterministic offline fallback.",
+      "Protects per-user application records behind JWT-authenticated REST endpoints.",
+      "Generates resume bullets from parsed job requirement data.",
+    ],
   },
   primetrade: {
     problem:
@@ -107,6 +126,12 @@ const RESUME_INSIGHTS: Record<
       "Maintaining fast async database access while enforcing per-user data isolation — solved with async SQLAlchemy, scoped queries, and a modular backend architecture.",
     contribution:
       "Built the async API, authentication layer, P&L analytics engine, React client integration, and Docker Compose setup.",
+    outcomes: [
+      "Computes automated profit-and-loss per trading position from logged entries.",
+      "Surfaces portfolio-level performance summaries through async FastAPI endpoints.",
+      "Enforces per-user isolation across trade and position records in PostgreSQL.",
+      "Runs as Docker Compose services for reproducible local and containerized setups.",
+    ],
   },
 };
 
@@ -220,6 +245,58 @@ function inferProblem(ctx: InsightContext): string {
   return `Provides a software solution for ${readableName} use cases identified in the repository scope.`;
 }
 
+function inferOutcomes(ctx: InsightContext): string[] {
+  const outcomes: string[] = [];
+  const { descLower, nameLower, tech } = ctx;
+
+  if (hasAny(nameLower + descLower, ["climaterisk", "climate", "geospatial", "ndvi", "stac"])) {
+    outcomes.push(
+      "Supports AOI-scoped geospatial analysis across open satellite-derived raster layers."
+    );
+  }
+  if (hasAny(nameLower + descLower, ["galaxy", "morphology", "cnn", "classif"])) {
+    outcomes.push(
+      "Automates image classification through a reproducible training and inference pipeline."
+    );
+  }
+  if (hasAny(nameLower + descLower, ["kanban", "job application", "applynest"])) {
+    outcomes.push(
+      "Tracks workflow state across pipeline stages with persistent, user-scoped records."
+    );
+  }
+  if (hasAny(nameLower + descLower, ["primetrade", "crypto", "trade", "p&l", "portfolio"])) {
+    outcomes.push(
+      "Derives position-level profit-and-loss and portfolio summaries from logged trade data."
+    );
+  }
+  if (hasAny(descLower + nameLower, ["auth", "jwt"])) {
+    outcomes.push("Restricts data access to authenticated users via token-based API protection.");
+  }
+  if (hasAny(descLower + nameLower, ["dashboard", "analytics", "visual"])) {
+    outcomes.push("Presents operational data through interactive dashboard views.");
+  }
+  if (hasAny(descLower + nameLower, ["api", "rest", "endpoint", "fastapi", "express"])) {
+    outcomes.push("Exposes core application behavior through documented REST endpoints.");
+  }
+  if (hasAny(descLower + nameLower, ["docker", "container", "compose"])) {
+    outcomes.push("Supports reproducible multi-service setups via containerized deployment.");
+  }
+  if (hasAny(descLower + nameLower, ["ml", "model", "pytorch", "inference"])) {
+    outcomes.push("Delivers model predictions through a scriptable inference workflow.");
+  }
+  if (hasAny(descLower + nameLower, ["map", "leaflet", "gis", "spatial"])) {
+    outcomes.push("Renders spatial results on interactive map interfaces.");
+  }
+
+  if (outcomes.length === 0 && tech.length > 0) {
+    outcomes.push(
+      `Delivers the repository's scoped functionality using ${tech.slice(0, 3).join(", ")}.`
+    );
+  }
+
+  return [...new Set(outcomes)].slice(0, 4);
+}
+
 function buildTechnicalHighlights(ctx: InsightContext): string[] {
   const highlights: string[] = [];
   const { tech, descLower, nameLower } = ctx;
@@ -329,6 +406,7 @@ function inferFromMetadata(ctx: InsightContext): ProjectInsights {
   return {
     problem: inferProblem(ctx),
     keyFeatures: pickFeatures(ctx),
+    outcomes: inferOutcomes(ctx),
     technicalHighlights: buildTechnicalHighlights(ctx),
     engineeringChallenge: inferEngineeringChallenge(ctx),
     contribution: inferContribution(ctx),

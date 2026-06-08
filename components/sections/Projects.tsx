@@ -153,6 +153,22 @@ function ProjectEngineeringDetails({ project }: { project: Project }) {
         </div>
       )}
 
+      {project.outcomes && project.outcomes.length > 0 && (
+        <div>
+          <h4 className="text-accent-yellow font-semibold text-sm uppercase tracking-wider mb-2">
+            Outcomes
+          </h4>
+          <ul className="space-y-1.5">
+            {project.outcomes.map((outcome) => (
+              <li key={outcome} className="text-gray-400 text-sm leading-relaxed flex gap-2">
+                <span className="text-white/60 mt-1.5 shrink-0">•</span>
+                <span>{outcome}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {project.technicalHighlights && project.technicalHighlights.length > 0 && (
         <div>
           <h4 className="text-accent-yellow font-semibold text-sm uppercase tracking-wider mb-2">

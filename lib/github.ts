@@ -37,6 +37,7 @@ export interface Project {
   featured?: boolean;
   problem?: string;
   keyFeatures?: string[];
+  outcomes?: string[];
   technicalHighlights?: string[];
   engineeringChallenge?: string;
   contribution?: string;
