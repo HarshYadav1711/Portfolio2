@@ -90,7 +90,7 @@ export default function Hero() {
           className="designing-text text-accent-yellow text-2xl md:text-3xl lg:text-4xl font-bold mb-4 tracking-wider"
           initial={{ opacity: 0 }}
         >
-          DEVELOPING AND LEARNING {/* TODO: Replace with your tagline (e.g., "DEVELOPING", "CREATING", "BUILDING") */}
+          FULL STACK · AI · REAL-WORLD SYSTEMS
         </motion.div>
 
         {/* Large outlined name */}
@@ -140,7 +140,7 @@ export default function Hero() {
           className="description text-white text-lg md:text-xl lg:text-2xl font-light max-w-2xl mx-auto leading-relaxed"
           initial={{ opacity: 0 }}
         >
-          Full-Stack Developer with 3+ years of experience, who loves to build for form & function! {/* TODO: Replace with your own description */}
+          B.Tech Computer Science student and full-stack developer. I ship web apps, backend services, and AI-powered tools — and I&apos;m looking for internships where I can grow on production code.
         </motion.p>
       </motion.div>
 

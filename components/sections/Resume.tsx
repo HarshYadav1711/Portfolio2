@@ -8,49 +8,63 @@ export default function Resume() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // ============================================
-  // PERSONALIZE: Update your work experience
-  // ============================================
   const experiences = [
     {
-      period: "2023 - Present", // TODO: Update with your dates
-      role: "Computer Science Student", // TODO: Update with your role
-      college: "United College Of Engineering And Research, Prayagraj", // TODO: Update with company name
-      description: "I am a Computer Science Student at United College Of Engineering And Research, Prayagraj. I am currently in my 3rd year of study. I am interested in web development and machine learning.", // TODO: Update with your achievements
+      period: "Feb 2026 – Mar 2026",
+      role: "Full Stack Development Intern",
+      company: "VibeOps (Remote)",
+      description:
+        "Contributed to production-oriented full-stack features using React, Node.js, and REST APIs. Designed UI flows in Figma and connected them to PostgreSQL-backed services — strengthening my skills in end-to-end feature delivery, API integration, and writing maintainable code with GenAI-assisted workflows.",
     },
     {
-      period: "2025", // TODO: Update with your dates
-      role: "Student Intern", // TODO: Update with your role
-      company: "Prodigy InfoTech", // TODO: Update with company name
-      description: "Pursued a virtual internship in CyberSecurity at Prodigy InfoTech and built various projects related to CyberSecurity.", // TODO: Update with your achievements
+      period: "May 2025",
+      role: "Python Programming Intern",
+      company: "CodeAlpha (Remote)",
+      description:
+        "Built Python data pipelines with Pandas and NumPy and trained supervised and unsupervised models with Scikit-learn. Gained hands-on experience in feature engineering, dataset preparation, and evaluating model performance on structured data.",
     },
     {
-      period: "2025", // TODO: Update with your dates
-      role: "Student Intern", // TODO: Update with your role
-      company: "CodeAlpha", // TODO: Update with company name
-      description: "Pursued a virtual internship in Python Programming at CodeAlpha and built various projects related to Python Programming.", // TODO: Update with your achievements
+      period: "Jun 2025",
+      role: "Cybersecurity Intern",
+      company: "Prodigy Infotech (Remote)",
+      description:
+        "Performed vulnerability assessments and manual penetration testing on web applications. Documented security findings and recommended mitigations — developing a practical understanding of common web vulnerabilities and secure development practices.",
     },
   ];
 
-  // ============================================
-  // PERSONALIZE: Update your education
-  // ============================================
   const education = [
     {
-      period: "2023 - Present", // TODO: Update with your dates
-      degree: "Bachelor of Technology in Computer Science", // TODO: Update with your degree
-      institution: "United College Of Engineering And Research, Prayagraj", // TODO: Update with your university name
+      period: "Oct 2023 – Oct 2027",
+      degree: "Bachelor of Technology, Computer Science",
+      institution: "United College of Engineering and Research — Prayagraj, India",
+      details: "CGPA: 7.60/10. Coursework in Data Structures & Algorithms, Machine Learning, System Design, DBMS, and Computer Networking — applied directly in full-stack and ML project work.",
     },
   ];
 
-  // ============================================
-  // PERSONALIZE: Update your skills list
-  // ============================================
+  const certifications = [
+    {
+      period: "Nov 2025",
+      title: "Oracle Cloud Infrastructure 2025 AI Foundations Associate",
+      issuer: "Oracle",
+    },
+    {
+      period: "Dec 2025 – Present",
+      title: "Full Stack Web Development",
+      issuer: "GeeksforGeeks",
+    },
+  ];
+
+  const achievements = [
+    "DevFest 2025 (United Institute of Technology, Prayagraj) — hands-on lab sessions on emerging technology topics.",
+    "Open-source contributor; independently builds projects across scalable backend systems and applied AI/ML.",
+    "Outside coursework: competitive coding, game development, and AI research.",
+  ];
+
   const skills = [
-    "React", "Next.js", "TypeScript", "Node.js", "Python", "MySQL",
-    "MongoDB", "CSS", "HTML", "ExpressJS", "FastAPI", "REST APIs",
-    "TailwindCSS", "Framer Motion", "GitHub", "Git", "JavaScript", "Blender"
-    // TODO: Add/remove skills as needed
+    "Python", "JavaScript", "TypeScript", "SQL", "C++",
+    "React.js", "Node.js", "Express.js", "FastAPI", "REST APIs", "JWT",
+    "PostgreSQL", "MongoDB", "PostGIS", "PyTorch", "Scikit-learn",
+    "GeoPandas", "Docker", "Git", "GitHub", "Figma",
   ];
 
   return (
@@ -69,11 +83,6 @@ export default function Resume() {
           Resume
         </motion.h2>
 
-        {/* Resume Actions */}
-        {/* ============================================
-            PERSONALIZE: Add your resume PDF file to /public folder
-            Update the filename below if your resume has a different name
-            ============================================ */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -103,7 +112,6 @@ export default function Resume() {
           </motion.a>
         </motion.div>
 
-        {/* Experience */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -131,11 +139,10 @@ export default function Resume() {
           </div>
         </motion.div>
 
-        {/* Education */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
           className="mb-16"
         >
           <h3 className="text-3xl font-bold mb-8 text-accent-yellow">Education</h3>
@@ -145,24 +152,72 @@ export default function Resume() {
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+                transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
                 className="border-l-2 border-accent-yellow/30 pl-6"
               >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                   <h4 className="text-xl font-bold">{edu.degree}</h4>
                   <span className="text-accent-yellow text-sm font-mono">{edu.period}</span>
                 </div>
-                <p className="text-accent-red font-semibold">{edu.institution}</p>
+                <p className="text-accent-red font-semibold mb-2">{edu.institution}</p>
+                <p className="text-gray-400 text-sm">{edu.details}</p>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
-        {/* Skills */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.7 }}
+          transition={{ duration: 0.8, delay: 0.55 }}
+          className="mb-16"
+        >
+          <h3 className="text-3xl font-bold mb-8 text-accent-yellow">Certifications & Training</h3>
+          <div className="space-y-6">
+            {certifications.map((cert, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+                className="border-l-2 border-accent-yellow/30 pl-6"
+              >
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                  <h4 className="text-xl font-bold">{cert.title}</h4>
+                  <span className="text-accent-yellow text-sm font-mono">{cert.period}</span>
+                </div>
+                <p className="text-accent-red font-semibold">{cert.issuer}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.65 }}
+          className="mb-16"
+        >
+          <h3 className="text-3xl font-bold mb-8 text-accent-yellow">Achievements & Activities</h3>
+          <ul className="space-y-4">
+            {achievements.map((item, index) => (
+              <motion.li
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
+                className="border-l-2 border-accent-yellow/30 pl-6 text-gray-400"
+              >
+                {item}
+              </motion.li>
+            ))}
+          </ul>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.75 }}
         >
           <h3 className="text-3xl font-bold mb-8 text-accent-yellow">Skills</h3>
           <div className="flex flex-wrap gap-3">
@@ -183,4 +238,3 @@ export default function Resume() {
     </section>
   );
 }
-

@@ -12,8 +12,18 @@ const inter = Inter({
 // PERSONALIZE: Update site metadata for SEO
 // ============================================
 export const metadata: Metadata = {
-  title: "Full-Stack Developer & Visual Engineer", // TODO: Replace with your title
-  description: "Crafting immersive digital experiences with precision and intention.", // TODO: Replace with your description
+  title: "Harsh Yadav | Full Stack Developer & Software Engineer",
+  description:
+    "Portfolio of Harsh Yadav — Full Stack Developer and Software Engineer building with React, Next.js, Node.js, and AI applications. Projects, experience, and resume.",
+  keywords: [
+    "Harsh Yadav",
+    "Full Stack Developer",
+    "Software Engineer",
+    "React",
+    "Next.js",
+    "Node.js",
+    "AI Applications",
+  ],
 };
 
 export default function RootLayout({

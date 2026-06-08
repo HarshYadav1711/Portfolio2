@@ -8,12 +8,13 @@ import gsap from "gsap";
 // PERSONALIZE: Update skill categories and technologies
 // ============================================
 const skillCategories = {
-  Frontend: ["HTML", "CSS", "Tailwind CSS", "JavaScript", "React", "Next.JS"], // TODO: Update with your frontend skills
-  Backend: ["Node.js", "Python", "Express", "FastAPI", "REST APIs", "GraphQL"], // TODO: Update with your backend skills
-  DevOps: ["Git", "GitHub"], // TODO: Update with your DevOps skills
-  Databases: ["MySQL", "MongoDB"], // TODO: Update with your database skills
-  Tools: ["Git", "VS Code", "Figma", "Blender"], // TODO: Update with your tools
-  // TODO: Add or remove categories as needed (e.g., "Mobile", "Design", "Cloud", etc.)
+  Languages: ["Python", "JavaScript", "TypeScript", "SQL", "C++"],
+  Frontend: ["React.js", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap", "Vite"],
+  Backend: ["Node.js", "Express.js", "FastAPI", "REST APIs", "JWT Authentication"],
+  Databases: ["PostgreSQL", "MongoDB", "SQLite", "MySQL", "PostGIS"],
+  "AI / ML": ["PyTorch", "Scikit-learn", "Pandas", "NumPy", "Deep Learning", "Feature Engineering"],
+  Geospatial: ["GeoPandas", "Rasterio", "Shapely", "Leaflet", "STAC APIs"],
+  "Tools & Platforms": ["Git", "GitHub", "Docker", "Postman", "Figma"],
 };
 
 export default function Skills() {

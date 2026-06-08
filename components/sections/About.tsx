@@ -9,18 +9,15 @@ import gsap from "gsap";
 // PERSONALIZE: Update your skills list
 // ============================================
 const skills = [
-  "HTML", "CSS", "JavaScript", "React", "Next.js", "TypeScript", "Node.js", "Python", "MySQL",
-  "MongoDB", "ExpressJS", "Git", "GitHub", "AI Tools", "Figma", "TailwindCSS", "Framer Motion", "Blender"
-  // TODO: Add/remove skills as needed
+  "Python", "JavaScript", "TypeScript", "React", "Node.js", "FastAPI",
+  "PostgreSQL", "MongoDB", "PyTorch", "Docker", "Git", "Figma", "Tailwind CSS",
 ];
 
-// ============================================
-// PERSONALIZE: Update your work experience timeline
-// ============================================
 const timeline = [
-  { year: "2023", role: "Started Pursuing B.Tech in Computer Science and Engineering At United College Of Engineering And Research"}, // TODO: Replace with your experience
-  { year: "2025", role: "Student Intern", company: "CodeAlpha" },
-  { year: "2025", role: "Student Intern", company: "Prodigy InfoTech" },
+  { year: "2026", role: "Full Stack Development Intern", company: "VibeOps (Remote)" },
+  { year: "2025", role: "Cybersecurity Intern", company: "Prodigy Infotech (Remote)" },
+  { year: "2025", role: "Python Programming Intern", company: "CodeAlpha (Remote)" },
+  { year: "2023", role: "B.Tech Computer Science", company: "United College of Engineering and Research" },
 ];
 
 export default function About() {
@@ -108,8 +105,7 @@ export default function About() {
               transition={{ duration: 0.8, delay: 0.1 }}
               className="text-lg text-gray-400 leading-relaxed"
             >
-              I&apos;m a <span className="text-accent-yellow font-semibold">full-stack developer</span> who builds performant, visually expressive applications. My work blends <span className="text-accent-red font-semibold">engineering precision</span> with design awareness, enabling me to create products that feel fast, intentional, and delightful.
-              {/* TODO: Replace with your own bio text */}
+              I start with the problem, not the stack. As a CS student, I&apos;ve built full-stack apps with <span className="text-accent-yellow font-semibold">React and Node.js</span>, ML pipelines in Python, and data-heavy tools like geospatial platforms. I care about clear API design, reliable auth flows, and features that hold up beyond a demo — and I&apos;m especially drawn to <span className="text-accent-red font-semibold">AI-powered products</span> where engineering decisions directly affect what users get.
             </motion.p>
 
             <motion.div

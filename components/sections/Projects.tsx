@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, Star } from "lucide-react";
 import Image from "next/image";
 import gsap from "gsap";
 import { fetchGitHubRepos, convertReposToProjects, type Project } from "@/lib/github";
@@ -162,12 +162,18 @@ function ProjectCard({
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.8, delay: index * 0.15 }}
-      className={`project-card flex flex-col ${isEven ? "md:flex-row" : "md:flex-row-reverse"} gap-12 items-center`}
+      className={`project-card flex flex-col ${isEven ? "md:flex-row" : "md:flex-row-reverse"} gap-12 items-center ${project.featured ? "relative" : ""}`}
     >
+      {project.featured && (
+        <div className="absolute -top-4 left-0 md:left-auto md:right-0 flex items-center gap-2 px-4 py-1.5 bg-accent-yellow text-black text-sm font-semibold">
+          <Star className="w-4 h-4 fill-current" />
+          Resume Highlight
+        </div>
+      )}
       {/* Image */}
       <motion.div
         style={{ y }}
-        className="relative w-full md:w-1/2 aspect-video bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 overflow-hidden group"
+        className={`relative w-full md:w-1/2 aspect-video bg-gradient-to-br from-gray-800 to-gray-900 border overflow-hidden group ${project.featured ? "border-accent-yellow/60" : "border-gray-700/50"}`}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-accent-yellow/10 to-accent-red/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         {/* Try to load project image, fallback to gradient */}

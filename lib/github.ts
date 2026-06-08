@@ -1,5 +1,5 @@
 // GitHub API utility functions
-import { PRIORITIZED_PROJECTS, EXCLUDED_PROJECTS, PROJECT_DISPLAY_NAMES, FEATURED_PROJECT_ORDER } from './config';
+import { PRIORITIZED_PROJECTS, EXCLUDED_PROJECTS, PROJECT_DISPLAY_NAMES, FEATURED_PROJECT_ORDER, RESUME_PROJECT_DETAILS } from './config';
 
 export interface GitHubRepo {
   id: number;
@@ -24,6 +24,7 @@ export interface Project {
   image: string;
   liveUrl: string;
   githubUrl: string;
+  featured?: boolean;
 }
 
 // Tech stack detection based on repository topics and language
@@ -146,6 +147,18 @@ const getProjectImage = (repoName: string, index: number): string => {
   const nameLower = repoName.toLowerCase();
   
   // Map specific project names to their images
+  if (nameLower.includes('primetrade')) {
+    return '/Screenshot 2025-12-09 234211.png';
+  }
+  if (nameLower.includes('climaterisk')) {
+    return '/Screenshot 2025-12-09 234256.png';
+  }
+  if (nameLower.includes('applynest')) {
+    return '/Screenshot 2025-12-09 234320.png';
+  }
+  if (nameLower.includes('galaxy') || nameLower.includes('morphology')) {
+    return '/Screenshot 2025-12-09 234343.png';
+  }
   if (nameLower.includes('qps')) {
     return '/QPS.png'; // QPS project image (add this image to public folder if you have one)
   }
@@ -266,14 +279,21 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
   // Process projects and validate URLs
   const projects = await Promise.all(
     selectedRepos.map(async (repo, index) => {
-      const tech = detectTechStack(repo);
+      const nameLower = repo.name.toLowerCase();
+      const resumeDetailsKey = Object.keys(RESUME_PROJECT_DETAILS).find(key =>
+        nameLower.includes(key)
+      );
+      const resumeDetails = resumeDetailsKey ? RESUME_PROJECT_DETAILS[resumeDetailsKey] : null;
+      const tech = resumeDetails?.tech ?? detectTechStack(repo);
       
       // Use the GitHub repository description exactly as it appears on GitHub
       let description = '';
       
       // Use the GitHub repository description exactly as it appears on GitHub
       // Check if description exists and is not null/empty
-      if (repo.description && typeof repo.description === 'string' && repo.description.trim().length > 0) {
+      if (resumeDetails?.description) {
+        description = resumeDetails.description;
+      } else if (repo.description && typeof repo.description === 'string' && repo.description.trim().length > 0) {
         // Use the actual GitHub description as-is (just trim whitespace)
         description = repo.description.trim();
       } else if (repo.description === null || repo.description === undefined || repo.description === '') {
@@ -341,7 +361,6 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
       const projectImage = getProjectImage(repo.name, index);
 
       // Use custom display name if configured, otherwise format repo name
-      const nameLower = repo.name.toLowerCase();
       const customTitle = Object.keys(PROJECT_DISPLAY_NAMES).find(key => nameLower.includes(key));
       const title = customTitle
         ? PROJECT_DISPLAY_NAMES[customTitle]
@@ -350,6 +369,8 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
             .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
 
+      const featured = isPrioritizedProject(repo);
+
       return {
         title,
         description: description,
@@ -357,6 +378,7 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
         image: projectImage,
         liveUrl: liveUrl,
         githubUrl: repo.html_url,
+        featured,
       };
     })
   );
