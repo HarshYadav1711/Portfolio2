@@ -3,6 +3,7 @@ import Hero from "@/components/sections/Hero";
 import QuickFacts from "@/components/sections/QuickFacts";
 import About from "@/components/sections/About";
 import Impact from "@/components/sections/Impact";
+import Achievements from "@/components/sections/Achievements";
 import Skills from "@/components/sections/Skills";
 import HowIBuild from "@/components/sections/HowIBuild";
 import Projects from "@/components/sections/Projects";
@@ -19,6 +20,7 @@ export default function Home() {
       <QuickFacts />
       <About />
       <Impact />
+      <Achievements />
       <Skills />
       <HowIBuild />
       <Projects />

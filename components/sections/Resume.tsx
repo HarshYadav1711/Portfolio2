@@ -3,7 +3,12 @@
 import { useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Download, ExternalLink } from "lucide-react";
-import { RESUME_DOWNLOAD_NAME, RESUME_PATH } from "@/lib/profile-data";
+import {
+  ACHIEVEMENT_ACTIVITIES,
+  CERTIFICATIONS,
+  RESUME_DOWNLOAD_NAME,
+  RESUME_PATH,
+} from "@/lib/profile-data";
 
 export default function Resume() {
   const ref = useRef<HTMLDivElement>(null);
@@ -40,29 +45,6 @@ export default function Resume() {
       institution: "United College of Engineering and Research — Prayagraj, India",
       details: "CGPA: 7.60/10. Coursework in Data Structures & Algorithms, Machine Learning, System Design, DBMS, and Computer Networking — applied directly in full-stack and ML project work.",
     },
-  ];
-
-  const certifications = [
-    {
-      period: "Nov 2025",
-      title: "Oracle Cloud Infrastructure 2025 AI Foundations Associate",
-      issuer: "Oracle",
-    },
-    {
-      period: "Dec 2025 – Present",
-      title: "Full Stack Web Development",
-      issuer: "GeeksforGeeks",
-    },
-  ];
-
-  const achievements = [
-    "Codefront 2.0 Hackathon — Team Logic Lords (Google Developer Groups On Campus).",
-    "Elite Coders Winter of Code (ECWoC) — open-source participation among 5000+ participants.",
-    "DRISHTI: Annual Youth Dialogue 2026 — Hindu College, University of Delhi.",
-    "Renaissance-Techspan 2026 Participation Certificate.",
-    "DevFest 2025 (United Institute of Technology, Prayagraj) — hands-on lab sessions on emerging technology topics.",
-    "Active open-source contributor and self-directed learner with strong interest in scalable backend systems and applied AI/ML.",
-    "Interests: competitive coding, game development, and AI research.",
   ];
 
   const skills = [
@@ -173,14 +155,15 @@ export default function Resume() {
         </motion.div>
 
         <motion.div
+          id="resume-certifications"
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.55 }}
-          className="mb-16"
+          className="mb-16 scroll-mt-28"
         >
           <h3 className="text-3xl font-bold mb-8 text-accent-yellow">Certifications & Achievements</h3>
           <div className="space-y-6">
-            {certifications.map((cert, index) => (
+            {CERTIFICATIONS.map((cert, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
@@ -199,14 +182,15 @@ export default function Resume() {
         </motion.div>
 
         <motion.div
+          id="resume-achievements"
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.65 }}
-          className="mb-16"
+          className="mb-16 scroll-mt-28"
         >
           <h3 className="text-3xl font-bold mb-8 text-accent-yellow">Achievements & Activities</h3>
           <ul className="space-y-4">
-            {achievements.map((item, index) => (
+            {ACHIEVEMENT_ACTIVITIES.map((item, index) => (
               <motion.li
                 key={index}
                 initial={{ opacity: 0, x: -20 }}

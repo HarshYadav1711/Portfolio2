@@ -136,3 +136,54 @@ export const SKILL_CATEGORIES: Record<string, string[]> = {
 export function getListedSkills(): string[] {
   return [...new Set(Object.values(SKILL_CATEGORIES).flat())];
 }
+
+export const CERTIFICATIONS = [
+  {
+    period: "Nov 2025",
+    title: "Oracle Cloud Infrastructure 2025 AI Foundations Associate",
+    issuer: "Oracle",
+  },
+  {
+    period: "Dec 2025 – Present",
+    title: "Full Stack Web Development",
+    issuer: "GeeksforGeeks",
+  },
+] as const;
+
+export const ACHIEVEMENT_ACTIVITIES = [
+  "Codefront 2.0 Hackathon — Team Logic Lords (Google Developer Groups On Campus).",
+  "Elite Coders Winter of Code (ECWoC) — open-source participation among 5000+ participants.",
+  "DRISHTI: Annual Youth Dialogue 2026 — Hindu College, University of Delhi.",
+  "Renaissance-Techspan 2026 Participation Certificate.",
+  "DevFest 2025 (United Institute of Technology, Prayagraj) — hands-on lab sessions on emerging technology topics.",
+  "Active open-source contributor and self-directed learner with strong interest in scalable backend systems and applied AI/ML.",
+  "Interests: competitive coding, game development, and AI research.",
+] as const;
+
+/** Compact achievement cards — summaries only; full detail lives in Resume */
+export const ACHIEVEMENT_HIGHLIGHTS = [
+  {
+    id: "oracle-ai",
+    title: "Oracle Cloud AI Foundations Associate",
+    summary: "OCI 2025 AI Foundations Associate · Nov 2025",
+    resumeAnchor: "#resume-certifications",
+  },
+  {
+    id: "hackathons",
+    title: "Hackathons",
+    summary: "Codefront 2.0 · Team Logic Lords (GDG On Campus)",
+    resumeAnchor: "#resume-achievements",
+  },
+  {
+    id: "open-source",
+    title: "Open Source",
+    summary: "ECWoC participant · 5000+ contributor program",
+    resumeAnchor: "#resume-achievements",
+  },
+  {
+    id: "certifications",
+    title: "Certifications",
+    summary: `${CERTIFICATIONS.length} credentials · Oracle AI + GeeksforGeeks Full Stack`,
+    resumeAnchor: "#resume-certifications",
+  },
+] as const;
