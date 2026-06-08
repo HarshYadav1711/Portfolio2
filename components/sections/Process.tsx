@@ -9,22 +9,26 @@ const steps = [
   {
     icon: Search,
     title: "Discover",
-    description: "Deep dive into requirements, user needs, and technical constraints to define the optimal solution.",
+    description:
+      "Clarify the problem, who's affected, and what constraints matter before choosing a stack.",
   },
   {
     icon: Palette,
     title: "Design",
-    description: "Create intuitive interfaces and system architectures that balance aesthetics with functionality.",
+    description:
+      "Sketch flows, define API contracts, and align UI structure with how people actually use the feature.",
   },
   {
     icon: Code,
     title: "Develop",
-    description: "Build robust, scalable applications using modern technologies and best practices.",
+    description:
+      "Implement incrementally with typed APIs, tested auth paths, and code organized for the next change.",
   },
   {
     icon: Rocket,
     title: "Deliver",
-    description: "Deploy, monitor, and iterate to ensure continuous improvement and optimal performance.",
+    description:
+      "Ship, verify core paths work, and note what to improve on the next pass.",
   },
 ];
 

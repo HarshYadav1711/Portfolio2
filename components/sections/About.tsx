@@ -5,12 +5,9 @@ import { useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import gsap from "gsap";
 
-// ============================================
-// PERSONALIZE: Update your skills list
-// ============================================
 const skills = [
-  "Python", "JavaScript", "TypeScript", "React", "Node.js", "FastAPI",
-  "PostgreSQL", "MongoDB", "PyTorch", "Docker", "Git", "Figma", "Tailwind CSS",
+  "Python", "PyTorch", "JavaScript", "TypeScript", "React", "Node.js", "FastAPI",
+  "PostgreSQL", "MongoDB", "Scikit-learn", "Docker", "Git", "Figma", "Tailwind CSS",
 ];
 
 const timeline = [
@@ -96,16 +93,13 @@ export default function About() {
               About
             </motion.h2>
             
-            {/* ============================================
-                PERSONALIZE: Write your own bio/description
-                ============================================ */}
             <motion.p
               initial={{ opacity: 0, x: 40 }}
               animate={isInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.1 }}
               className="text-lg text-gray-400 leading-relaxed"
             >
-              I start with the problem, not the stack. As a CS student, I&apos;ve built full-stack apps with <span className="text-accent-yellow font-semibold">React and Node.js</span>, ML pipelines in Python, and data-heavy tools like geospatial platforms. I care about clear API design, reliable auth flows, and features that hold up beyond a demo — and I&apos;m especially drawn to <span className="text-accent-red font-semibold">AI-powered products</span> where engineering decisions directly affect what users get.
+              I start with the problem, not the stack. As an AI/ML-focused CS student, I&apos;ve built deep learning pipelines with <span className="text-accent-yellow font-semibold">PyTorch and Python</span>, full-stack apps with React and Node.js, and data-heavy tools like geospatial platforms. I care about clear API design, reliable auth flows, and ML workflows that hold up beyond a demo — especially <span className="text-accent-red font-semibold">applied AI/ML systems</span> where engineering decisions directly affect what users get.
             </motion.p>
 
             <motion.div

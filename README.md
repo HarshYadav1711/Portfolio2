@@ -1,89 +1,54 @@
-# Portfolio Website
+# Harsh Yadav — Portfolio
 
-A modern, sleek, high-end portfolio website for a Full-Stack Developer. Built with Next.js 14, TypeScript, TailwindCSS, and Framer Motion.
+Personal portfolio site for Harsh Yadav, an AI/ML-focused Computer Science undergraduate building with Python, PyTorch, React, Next.js, Node.js, and FastAPI.
 
-## Features
+**Live site:** [https://portfolio2-ivory-mu.vercel.app/](https://portfolio2-ivory-mu.vercel.app/)
 
-- **Dark Theme**: Charcoal background (#0d0d0f to #111113) with electric blue (#3B82F6) and neon cyan (#00F5FF) accents
-- **Smooth Animations**: GSAP and Framer Motion for fluid transitions and parallax effects
-- **Responsive Design**: Fully responsive from mobile to desktop
-- **Smooth Scrolling**: Lenis for high-FPS scrolling experience
-- **Modern UI**: Minimal layout with glassmorphism effects and subtle animations
+## Stack
+
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- Framer Motion & GSAP
+- Lenis (smooth scrolling)
+- Resend (contact form delivery)
 
 ## Sections
 
-1. **Hero Section**: Full-height viewport with animated text reveal and floating orb
-2. **About Section**: Two-column layout with profile image and narrative text
-3. **Skills Matrix**: Elegant grid with glowing hover effects
-4. **Featured Projects**: Alternating left/right layout with parallax images
-5. **Process Section**: 4-step timeline with smooth reveal animations
-6. **Contact Section**: Glassmorphism form with social icons
-7. **Footer**: Minimal footer with social links
+- Hero, Quick Facts, About, Impact, Skills, How I Build
+- Featured Projects (GitHub-backed with curated fallbacks)
+- Process, Resume, Contact
 
-## Tech Stack
-
-- **Next.js 14** (App Router)
-- **TypeScript**
-- **TailwindCSS**
-- **Framer Motion** (animations)
-- **GSAP** (advanced animations)
-- **Lenis** (smooth scrolling)
-- **Lucide React** (icons)
-
-## Getting Started
-
-1. Install dependencies:
+## Local Development
 
 ```bash
 npm install
-```
-
-2. Run the development server:
-
-```bash
 npm run dev
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Customization
+## Environment Variables
 
-### Update Content
+Contact form delivery requires:
 
-- **Hero Section**: Edit `components/sections/Hero.tsx`
-- **About Section**: Edit `components/sections/About.tsx` - Update the bio text, skills array, and timeline
-- **Projects**: Edit the `projects` array in `components/sections/Projects.tsx`
-- **Contact**: Update social links in `components/sections/Contact.tsx` and `components/sections/Footer.tsx`
+- `RESEND_API_KEY`
+- `CONTACT_EMAIL`
+- `RESEND_FROM_EMAIL` (optional)
 
-### Update Colors
+Optional:
 
-Edit `tailwind.config.ts` to customize the color scheme:
+- `NEXT_PUBLIC_SITE_URL` — canonical URL for Open Graph metadata (defaults to `https://portfolio2-ivory-mu.vercel.app`)
 
-```typescript
-colors: {
-  background: {
-    DEFAULT: "#0d0d0f",
-    light: "#111113",
-  },
-  accent: {
-    blue: "#3B82F6",
-    cyan: "#00F5FF",
-  },
-}
-```
+See `CONTACT_FORM_SETUP.md` and `VERCEL_SETUP.md` for deployment configuration.
 
-### Add Profile Image
-
-Replace the placeholder in `components/sections/About.tsx` with your actual profile image using Next.js Image component.
-
-## Build for Production
+## Production Build
 
 ```bash
 npm run build
 npm start
 ```
 
-## License
+## Project Configuration
 
-MIT
-
+Featured GitHub repositories, display names, and resume-aligned project copy live in `lib/config.ts`. Profile and skills data are centralized in `lib/profile-data.ts`.

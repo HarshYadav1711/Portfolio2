@@ -1,17 +1,26 @@
 // Verifiable profile data shared across portfolio sections
 
+export const SITE_URL = "https://portfolio2-ivory-mu.vercel.app";
+
 export const PROFILE = {
   name: "Harsh Yadav",
   location: "Prayagraj, India",
   degree: "B.Tech, Computer Science",
   institution: "United College of Engineering and Research",
+  email: "harshyadav.20032010@gmail.com",
+  phone: "+91 9118209699",
+  linkedin: "https://www.linkedin.com/in/harsh-yadav-20032010am/",
+  github: "https://github.com/HarshYadav1711",
 } as const;
 
+export const PROFESSIONAL_SUMMARY =
+  "AI/ML-focused Computer Science undergraduate with hands-on experience building machine learning and deep learning systems using Python, PyTorch, Scikit-learn, Pandas, and FastAPI.";
+
 export const PRIMARY_TECHNOLOGIES = [
-  "React",
-  "Node.js",
-  "TypeScript",
   "Python",
+  "PyTorch",
+  "React",
+  "TypeScript",
   "FastAPI",
   "PostgreSQL",
 ] as const;
@@ -92,7 +101,19 @@ export const SKILL_CATEGORIES: Record<string, string[]> = {
   Frontend: ["React.js", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap", "Vite"],
   Backend: ["Node.js", "Express.js", "FastAPI", "REST APIs", "JWT Authentication"],
   Databases: ["PostgreSQL", "MongoDB", "SQLite", "MySQL", "PostGIS"],
-  "AI / ML": ["PyTorch", "Scikit-learn", "Pandas", "NumPy", "Deep Learning", "Feature Engineering"],
+  "AI / ML": [
+    "PyTorch",
+    "Scikit-learn",
+    "Pandas",
+    "NumPy",
+    "TensorFlow",
+    "Deep Learning",
+    "CNNs",
+    "Feature Engineering",
+    "Data Preprocessing",
+    "Model Evaluation",
+    "Predictive Modeling",
+  ],
   Geospatial: ["GeoPandas", "Rasterio", "Shapely", "Leaflet", "STAC APIs"],
   "Tools & Platforms": ["Git", "GitHub", "Docker", "Postman", "Figma"],
 };

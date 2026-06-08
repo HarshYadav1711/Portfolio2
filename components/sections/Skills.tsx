@@ -6,11 +6,6 @@ import gsap from "gsap";
 
 import { SKILL_CATEGORIES } from "@/lib/profile-data";
 
-// ============================================
-// PERSONALIZE: Update skill categories and technologies
-// ============================================
-const skillCategories = SKILL_CATEGORIES;
-
 export default function Skills() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -55,7 +50,7 @@ export default function Skills() {
         </motion.h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.entries(skillCategories).map(([category, skills], categoryIndex) => (
+          {Object.entries(SKILL_CATEGORIES).map(([category, skills], categoryIndex) => (
             <motion.div
               key={category}
               initial={{ opacity: 0, y: 30 }}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
+import { SITE_URL } from "@/lib/profile-data";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -15,14 +16,14 @@ function getSiteUrl(): string {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
-  return "http://localhost:3000";
+  return SITE_URL;
 }
 
 const siteUrl = getSiteUrl();
 const siteName = "Harsh Yadav";
 const title = "Harsh Yadav | Full Stack Developer";
 const description =
-  "Full Stack Developer portfolio focused on React, Next.js, Node.js, and AI applications. Projects, internship experience, and production-oriented web development work.";
+  "AI/ML-focused full-stack developer portfolio featuring React, Next.js, Node.js, PyTorch, and FastAPI projects, internship experience, and production-oriented engineering work.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

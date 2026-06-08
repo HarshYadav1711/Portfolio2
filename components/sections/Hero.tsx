@@ -17,10 +17,7 @@ export default function Hero() {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
-  // ============================================
-  // PERSONALIZE: Change your name/initials here
-  // ============================================
-  const name = "HARSH"; // TODO: Replace with your name or initials
+  const name = "HARSH";
   const letters = name.split("");
 
   useEffect(() => {
@@ -83,14 +80,11 @@ export default function Hero() {
         style={{ y }}
         className="relative z-10 text-center w-full"
       >
-        {/* ============================================
-            PERSONALIZE: Change the top text (e.g., "DESIGNING", "DEVELOPING", "CREATING")
-            ============================================ */}
         <motion.div
           className="designing-text text-accent-yellow text-2xl md:text-3xl lg:text-4xl font-bold mb-4 tracking-wider"
           initial={{ opacity: 0 }}
         >
-          FULL STACK · AI · REAL-WORLD SYSTEMS
+          AI/ML · FULL STACK · PRODUCTION SYSTEMS
         </motion.div>
 
         {/* Large outlined name */}
@@ -116,31 +110,16 @@ export default function Hero() {
                 transition={{ duration: 0.2 }}
               >
                 {letter === " " ? "\u00A0" : letter}
-                {/* Hover tooltip */}
-                {hoveredLetter === index && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute -top-12 left-1/2 transform -translate-x-1/2 whitespace-nowrap"
-                  >
-                    <div className="bg-white text-black text-xs font-semibold px-3 py-1 shadow-lg">
-                      HOVER OVER {letter}
-                    </div>
-                  </motion.div>
-                )}
               </motion.span>
             ))}
           </h1>
         </div>
 
-        {/* ============================================
-            PERSONALIZE: Update your hero description
-            ============================================ */}
         <motion.p
           className="description text-white text-lg md:text-xl lg:text-2xl font-light max-w-2xl mx-auto leading-relaxed"
           initial={{ opacity: 0 }}
         >
-          B.Tech Computer Science student and full-stack developer. I ship web apps, backend services, and AI-powered tools — and I&apos;m looking for internships where I can grow on production code.
+          AI/ML-focused CS undergraduate building deep learning systems, full-stack web apps, and FastAPI backends with Python, PyTorch, React, and Node.js — open to internships on production code.
         </motion.p>
       </motion.div>
 

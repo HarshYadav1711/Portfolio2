@@ -5,9 +5,6 @@ import { motion, useInView } from "framer-motion";
 import { Github, Linkedin, Mail } from "lucide-react";
 import gsap from "gsap";
 
-// ============================================
-// PERSONALIZE: Update your social media links
-// ============================================
 const socialLinks = [
   { icon: Github, url: "https://github.com/HarshYadav1711", label: "GitHub" },
   { icon: Linkedin, url: "https://www.linkedin.com/in/harsh-yadav-20032010am/", label: "LinkedIn" },

@@ -128,7 +128,7 @@ Message:
 ${message}
 
 ---
-This message was sent from your portfolio contact form.`;
+This message was sent from the Harsh Yadav portfolio contact form.`;
 
     const emailPayload = {
       from: fromEmail,
@@ -150,7 +150,7 @@ This message was sent from your portfolio contact form.`;
                 </div>
               </div>
               <p style="color: #888; font-size: 12px; margin-top: 20px;">
-                This message was sent from your portfolio contact form.
+                This message was sent from the Harsh Yadav portfolio contact form.
               </p>
             </div>
           `,

@@ -1,15 +1,6 @@
-// ============================================
-// PERSONALIZE: Add your GitHub username here
-// ============================================
-// Example: If your GitHub URL is https://github.com/yourusername
-// Then set: export const GITHUB_USERNAME = "yourusername";
-export const GITHUB_USERNAME = "HarshYadav1711"; // TODO: Replace with your actual GitHub username
+export const GITHUB_USERNAME = "HarshYadav1711";
 
-// ============================================
-// PRIORITIZED PROJECTS: Projects to always show first
-// ============================================
-// Add repository names (exact match or partial match) that should be prioritized
-// These projects will appear first in your portfolio
+/** Featured repositories — shown first and mapped to resume-aligned copy */
 export const PRIORITIZED_PROJECTS: string[] = [
   "climaterisk-sentinel",
   "ai_based_galaxy_morphology_classifier",
@@ -17,10 +8,7 @@ export const PRIORITIZED_PROJECTS: string[] = [
   "primetrade",
 ];
 
-// ============================================
-// EXCLUDED PROJECTS: Projects to hide from portfolio
-// ============================================
-// Add repository names that should be excluded from the portfolio
+/** Repositories hidden from the featured projects list */
 export const EXCLUDED_PROJECTS: string[] = [
   "clinic-tracker",
   "clinic",
@@ -28,10 +16,7 @@ export const EXCLUDED_PROJECTS: string[] = [
   "primetrade-data-science",
 ];
 
-// ============================================
-// PROJECT DISPLAY NAMES: Custom titles for specific repos
-// ============================================
-// Map repo name keyword (lowercase) to the exact title to show in portfolio
+/** Display titles for curated repositories */
 export const PROJECT_DISPLAY_NAMES: { [key: string]: string } = {
   "climaterisk-sentinel": "ClimateRisk Sentinel",
   "ai_based_galaxy_morphology_classifier": "AI-Based Galaxy Morphology Classifier",
@@ -39,7 +24,6 @@ export const PROJECT_DISPLAY_NAMES: { [key: string]: string } = {
   "primetrade": "Primetrade Crypto Trade Logger",
 };
 
-// Order for featured projects (first in list = show first)
 export const FEATURED_PROJECT_ORDER: string[] = [
   "climaterisk-sentinel",
   "ai_based_galaxy_morphology_classifier",
@@ -47,7 +31,6 @@ export const FEATURED_PROJECT_ORDER: string[] = [
   "primetrade",
 ];
 
-// Resume project descriptions and tech stack overrides
 export const RESUME_PROJECT_DETAILS: {
   [key: string]: { description: string; tech: string[] };
 } = {
@@ -72,4 +55,3 @@ export const RESUME_PROJECT_DETAILS: {
     tech: ["FastAPI", "PostgreSQL", "React", "Docker"],
   },
 };
-

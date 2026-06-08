@@ -15,21 +15,21 @@ export default function Resume() {
       role: "Full Stack Development Intern",
       company: "VibeOps (Remote)",
       description:
-        "Contributed to production-oriented full-stack features using React, Node.js, and REST APIs. Designed UI flows in Figma and connected them to PostgreSQL-backed services — strengthening my skills in end-to-end feature delivery, API integration, and writing maintainable code with GenAI-assisted workflows.",
+        "Built full-stack, production-oriented features using React, Node.js, REST APIs, and PostgreSQL-backed services. Designed responsive UI workflows in Figma and implemented scalable frontend-backend integrations. Used GenAI tools such as Cursor and GitHub Copilot to improve development speed while maintaining production-oriented code quality and modular architecture.",
     },
     {
       period: "May 2025",
       role: "Python Programming Intern",
       company: "CodeAlpha (Remote)",
       description:
-        "Built Python data pipelines with Pandas and NumPy and trained supervised and unsupervised models with Scikit-learn. Gained hands-on experience in feature engineering, dataset preparation, and evaluating model performance on structured data.",
+        "Built Python and ML-oriented data preprocessing pipelines using Pandas and NumPy, including feature engineering and dataset transformation workflows. Trained supervised and unsupervised learning models with Scikit-learn for experimentation and predictive analysis on structured datasets.",
     },
     {
       period: "Jun 2025",
       role: "Cybersecurity Intern",
       company: "Prodigy Infotech (Remote)",
       description:
-        "Performed vulnerability assessments and manual penetration testing on web applications. Documented security findings and recommended mitigations — developing a practical understanding of common web vulnerabilities and secure development practices.",
+        "Conducted vulnerability assessments and manual penetration testing on web applications. Documented critical security flaws, risk analysis findings, and mitigation strategies for improving application security posture.",
     },
   ];
 
@@ -56,16 +56,21 @@ export default function Resume() {
   ];
 
   const achievements = [
+    "Codefront 2.0 Hackathon — Team Logic Lords (Google Developer Groups On Campus).",
+    "Elite Coders Winter of Code (ECWoC) — open-source participation among 5000+ participants.",
+    "DRISHTI: Annual Youth Dialogue 2026 — Hindu College, University of Delhi.",
+    "Renaissance-Techspan 2026 Participation Certificate.",
     "DevFest 2025 (United Institute of Technology, Prayagraj) — hands-on lab sessions on emerging technology topics.",
-    "Open-source contributor; independently builds projects across scalable backend systems and applied AI/ML.",
-    "Outside coursework: competitive coding, game development, and AI research.",
+    "Active open-source contributor and self-directed learner with strong interest in scalable backend systems and applied AI/ML.",
+    "Interests: competitive coding, game development, and AI research.",
   ];
 
   const skills = [
     "Python", "JavaScript", "TypeScript", "SQL", "C++",
+    "PyTorch", "Scikit-learn", "Pandas", "NumPy", "TensorFlow", "Deep Learning", "CNNs",
     "React.js", "Node.js", "Express.js", "FastAPI", "REST APIs", "JWT",
-    "PostgreSQL", "MongoDB", "PostGIS", "PyTorch", "Scikit-learn",
-    "GeoPandas", "Docker", "Git", "GitHub", "Figma",
+    "PostgreSQL", "MongoDB", "PostGIS", "GeoPandas", "Rasterio", "Leaflet",
+    "Docker", "Git", "GitHub", "Figma",
   ];
 
   return (
@@ -173,7 +178,7 @@ export default function Resume() {
           transition={{ duration: 0.8, delay: 0.55 }}
           className="mb-16"
         >
-          <h3 className="text-3xl font-bold mb-8 text-accent-yellow">Certifications & Training</h3>
+          <h3 className="text-3xl font-bold mb-8 text-accent-yellow">Certifications & Achievements</h3>
           <div className="space-y-6">
             {certifications.map((cert, index) => (
               <motion.div

@@ -5,20 +5,15 @@ import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { ExternalLink, Github, Star } from "lucide-react";
 import Image from "next/image";
 import gsap from "gsap";
-import { fetchGitHubRepos, convertReposToProjects, type Project } from "@/lib/github";
+import {
+  fetchGitHubRepos,
+  convertReposToProjects,
+  getCuratedFallbackProjects,
+  type Project,
+} from "@/lib/github";
 import { GITHUB_USERNAME } from "@/lib/config";
 
-// Fallback projects in case GitHub API fails
-const fallbackProjects: Project[] = [
-  {
-    title: "Sample Project",
-    description: "A sample project to showcase your work. Update your GitHub username in lib/config.ts to fetch your real projects.",
-    tech: ["React", "TypeScript", "Next.js"],
-    image: "/project1.jpg",
-    liveUrl: "#",
-    githubUrl: "#",
-  },
-];
+const fallbackProjects = getCuratedFallbackProjects();
 
 export default function Projects() {
   const ref = useRef<HTMLDivElement>(null);
@@ -37,11 +32,10 @@ export default function Projects() {
           const githubProjects = await convertReposToProjects(repos, GITHUB_USERNAME);
           setProjects(githubProjects);
         } else {
-          console.warn("No GitHub repositories found. Using fallback projects.");
           setProjects(fallbackProjects);
         }
       } catch (error) {
-        console.error("Error loading GitHub projects:", error);
+        console.error("Error loading projects:", error);
         setProjects(fallbackProjects);
       } finally {
         setLoading(false);
@@ -117,7 +111,7 @@ export default function Projects() {
 
         {projects.length === 0 ? (
           <div className="text-center py-20 text-gray-400">
-            <p>No projects found. Please check your GitHub username in lib/config.ts</p>
+            <p>Projects are unavailable right now.</p>
           </div>
         ) : (
           <div className="space-y-32">
@@ -237,7 +231,6 @@ function ProjectCard({
         className={`relative w-full md:w-1/2 aspect-video bg-gradient-to-br from-gray-800 to-gray-900 border overflow-hidden group ${project.featured ? "border-accent-yellow/60" : "border-gray-700/50"}`}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-accent-yellow/10 to-accent-red/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        {/* Try to load project image, fallback to gradient */}
         <div className="relative w-full h-full">
           {project.image && (
             <Image
@@ -250,16 +243,12 @@ function ProjectCard({
               priority={index < 2}
               sizes="(max-width: 768px) 100vw, 50vw"
               onError={(e) => {
-                // Hide image on error, show gradient background instead
                 const target = e.currentTarget as HTMLImageElement;
-                target.style.display = 'none';
-                console.error(`Failed to load image: ${project.image}`);
+                target.style.display = "none";
               }}
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-gray-600 text-sm pointer-events-none z-[-1]">
-            {project.image && project.image.includes('project') && !project.image.includes('Screenshot') ? 'Project Image' : ''}
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 pointer-events-none z-[-1]" />
         </div>
         <motion.div
           className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"

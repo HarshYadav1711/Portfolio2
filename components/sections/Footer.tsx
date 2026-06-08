@@ -2,9 +2,6 @@
 
 import { Github, Linkedin, Mail } from "lucide-react";
 
-// ============================================
-// PERSONALIZE: Update your social media links (same as Contact section)
-// ============================================
 const socialLinks = [
   { icon: Github, url: "https://github.com/HarshYadav1711", label: "GitHub" },
   { icon: Linkedin, url: "https://www.linkedin.com/in/harsh-yadav-20032010am/", label: "LinkedIn" },
@@ -18,11 +15,8 @@ export default function Footer() {
     <footer className="relative py-12 px-6 md:px-12 lg:px-24 bg-background border-t border-gray-800">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          {/* ============================================
-              PERSONALIZE: Update copyright text
-              ============================================ */}
           <div className="text-gray-400 text-sm">
-            © {currentYear} Harsh Yadav Full-Stack Developer. All rights reserved. {/* TODO: Replace "Full-Stack Developer" with your name */}
+            © {currentYear} Harsh Yadav. All rights reserved.
           </div>
 
           {/* Social Icons */}

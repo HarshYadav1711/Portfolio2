@@ -9,11 +9,8 @@ interface NavItem {
   href: string;
 }
 
-// ============================================
-// PERSONALIZE: Customize navigation items if needed
-// ============================================
 const navItems: NavItem[] = [
-  { label: "WORK", href: "#projects" }, // TODO: Change label if desired
+  { label: "WORK", href: "#projects" },
   { label: "ABOUT", href: "#about" },
   { label: "RESUME", href: "#resume" },
   { label: "CONTACT", href: "#contact" },
@@ -71,12 +68,9 @@ export default function Navigation() {
             whileTap={{ scale: 0.9 }}
             className="flex-shrink-0"
           >
-            {/* ============================================
-                PERSONALIZE: Change your logo/initials
-                ============================================ */}
             <Link href="/" scroll={false}>
               <div className="w-12 h-8 bg-accent-red flex items-center justify-center shadow-lg hover:bg-accent-redLight transition-colors cursor-pointer">
-                <span className="text-white font-bold text-sm">HY.</span> {/* TODO: Replace with your initials (e.g., "JD.", "SM.") */}
+                <span className="text-white font-bold text-sm">HY.</span>
               </div>
             </Link>
           </motion.div>

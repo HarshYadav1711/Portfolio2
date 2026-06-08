@@ -1,6 +1,13 @@
 // GitHub API utility functions
-import { PRIORITIZED_PROJECTS, EXCLUDED_PROJECTS, PROJECT_DISPLAY_NAMES, FEATURED_PROJECT_ORDER, RESUME_PROJECT_DETAILS } from './config';
-import { buildProjectInsights } from './project-insights';
+import {
+  GITHUB_USERNAME,
+  PRIORITIZED_PROJECTS,
+  EXCLUDED_PROJECTS,
+  PROJECT_DISPLAY_NAMES,
+  FEATURED_PROJECT_ORDER,
+  RESUME_PROJECT_DETAILS,
+} from "./config";
+import { buildProjectInsights } from "./project-insights";
 
 export interface GitHubRepo {
   id: number;
@@ -104,19 +111,6 @@ export async function fetchGitHubRepos(username: string): Promise<GitHubRepo[]> 
     }
 
     const repos: GitHubRepo[] = await response.json();
-    
-    // Log descriptions for debugging
-    if (repos.length > 0) {
-      console.log('📋 Fetched GitHub Repos - Descriptions Sample:', 
-        repos.slice(0, 6).map(r => ({ 
-          name: r.name, 
-          description: r.description || '(null/empty)',
-          descriptionType: typeof r.description,
-          descriptionLength: r.description ? r.description.length : 0
-        }))
-      );
-    }
-    
     return repos;
   } catch (error) {
     console.error('Error fetching GitHub repos:', error);
@@ -205,7 +199,7 @@ const getProjectImage = (repoName: string, index: number): string => {
     return '/Screenshot 2025-12-09 234343.png';
   }
   if (nameLower.includes('qps')) {
-    return '/QPS.png'; // QPS project image (add this image to public folder if you have one)
+    return "/QPS.png";
   }
   if (nameLower === '1' || nameLower.trim() === '1') {
     return '/1.png';
@@ -343,7 +337,6 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
         description = repo.description.trim();
       } else if (repo.description === null || repo.description === undefined || repo.description === '') {
         // Only use fallback if description is truly missing
-        console.warn(`⚠️ No GitHub description found for repo: "${repo.name}". Value:`, repo.description);
         const nameWords = repo.name
           .split(/[-_]/)
           .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
@@ -378,16 +371,14 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
       if (repo.homepage && repo.homepage.trim() !== '') {
         // Skip validation for known problematic projects - don't show live URL at all
         if (isProblematicProject) {
-          console.warn(`Skipping live URL for known problematic project: ${repo.name} (URL: ${repo.homepage})`);
-          liveUrl = '';
+          liveUrl = "";
         } else if (isVercelDeployment) {
           // For Vercel deployments, always validate to catch 404 errors
           const isValid = await validateUrl(repo.homepage);
           if (isValid) {
             liveUrl = repo.homepage;
           } else {
-            console.warn(`Invalid or inaccessible Vercel deployment for project ${repo.name}: ${repo.homepage}`);
-            liveUrl = '';
+            liveUrl = "";
           }
         } else {
           // Validate URL for other projects
@@ -396,8 +387,7 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
             liveUrl = repo.homepage;
           } else {
             // URL is invalid, don't set liveUrl
-            console.warn(`Invalid or inaccessible URL for project ${repo.name}: ${repo.homepage}`);
-            liveUrl = '';
+            liveUrl = "";
           }
         }
       }
@@ -431,5 +421,53 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
   );
 
   return projects;
+}
+
+/** Curated project list used when the GitHub API is unavailable */
+export function getCuratedFallbackProjects(): Project[] {
+  return FEATURED_PROJECT_ORDER.flatMap((key, index) => {
+    const details = RESUME_PROJECT_DETAILS[key];
+    if (!details) {
+      return [];
+    }
+
+    const title = PROJECT_DISPLAY_NAMES[key] ?? key;
+    const nameLower = key.toLowerCase();
+    const stubRepo: GitHubRepo = {
+      id: index,
+      name: key,
+      description: details.description,
+      html_url: `https://github.com/${GITHUB_USERNAME}/${key}`,
+      homepage: null,
+      language: null,
+      topics: [],
+      stargazers_count: 0,
+      forks_count: 0,
+      fork: false,
+      archived: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    const insights = buildProjectInsights(stubRepo, {
+      title,
+      description: details.description,
+      tech: details.tech,
+      nameLower,
+    });
+
+    return [
+      {
+        title,
+        description: details.description,
+        tech: details.tech,
+        image: getProjectImage(key, index),
+        liveUrl: "",
+        githubUrl: `https://github.com/${GITHUB_USERNAME}/${key}`,
+        featured: true,
+        ...insights,
+      },
+    ];
+  });
 }
 
