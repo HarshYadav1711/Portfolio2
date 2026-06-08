@@ -1,108 +1,125 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  checkContactRateLimit,
+} from "@/lib/contact-rate-limit";
+import {
+  logContactDelivered,
+  logContactDeliveryFailure,
+  logContactEvent,
+} from "@/lib/contact-log";
+import {
+  CONTACT_LIMITS,
+  escapeHtml,
+  parseContactInput,
+} from "@/lib/contact-validation";
 
-// This API route handles contact form submissions
-// You can configure it to send emails using various services:
-// - Resend (recommended): https://resend.com
-// - SendGrid: https://sendgrid.com
-// - Nodemailer with SMTP
-// - Or integrate with Formspree, EmailJS, etc.
+function getClientIp(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    return forwarded.split(",")[0]?.trim() || "unknown";
+  }
+
+  const realIp = request.headers.get("x-real-ip");
+  if (realIp) {
+    return realIp.trim();
+  }
+
+  return "unknown";
+}
+
+function isEmailConfigured(): boolean {
+  return Boolean(process.env.RESEND_API_KEY && process.env.CONTACT_EMAIL);
+}
 
 export async function POST(request: NextRequest) {
   try {
-    let body;
+    const contentLength = request.headers.get("content-length");
+    if (
+      contentLength &&
+      Number.parseInt(contentLength, 10) > CONTACT_LIMITS.bodyMaxBytes
+    ) {
+      return NextResponse.json(
+        { error: "Request body is too large." },
+        { status: 413 }
+      );
+    }
+
+    let body: unknown;
     try {
       body = await request.json();
-    } catch (parseError) {
+    } catch {
       return NextResponse.json(
-        { error: 'Invalid request body. Please ensure all fields are provided.' },
+        { error: "Invalid request body. Please ensure all fields are provided." },
         { status: 400 }
       );
     }
 
-    const { name, email, message } = body;
-
-    // Validate required fields
-    if (!name || !email || !message) {
-      return NextResponse.json(
-        { error: 'All fields are required' },
-        { status: 400 }
-      );
+    const parsed = parseContactInput(body);
+    if (!parsed.ok) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
+    const { name, email, message } = parsed.data;
+    const clientIp = getClientIp(request);
+    const rateLimit = checkContactRateLimit(clientIp, email);
 
-    // ============================================
-    // EMAIL SENDING IMPLEMENTATION
-    // ============================================
-    // Try to send email using Resend (if configured)
-    // If Resend is not configured, the message will be logged
-    let emailSent = false;
-    let emailErrorDetails: string | null = null;
-    
-    // Debug: Check environment variables (without exposing sensitive data)
-    const hasApiKey = !!process.env.RESEND_API_KEY;
-    const hasContactEmail = !!process.env.CONTACT_EMAIL;
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Portfolio Contact <onboarding@resend.dev>';
-    
-    // Determine if we're in production (Vercel) or development
-    const isProduction = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
-    const environment = isProduction ? 'PRODUCTION (Vercel)' : 'DEVELOPMENT (Local)';
-    
-    console.log('📧 Email Configuration Check:', {
-      environment,
-      hasApiKey,
-      hasContactEmail,
-      fromEmail,
-      contactEmail: hasContactEmail ? process.env.CONTACT_EMAIL : 'NOT SET',
-      apiKeyPrefix: hasApiKey ? process.env.RESEND_API_KEY?.substring(0, 5) + '...' : 'NOT SET',
-      vercelEnv: process.env.VERCEL ? 'Yes' : 'No',
-    });
-    
-    if (hasApiKey && hasContactEmail) {
-      try {
-        // Dynamic import to avoid errors if resend is not installed
-        let Resend;
-        try {
-          const resendModule = await import('resend');
-          Resend = resendModule.Resend;
-        } catch (importError) {
-          console.error('❌ Resend package not installed. Install it with: npm install resend');
-          throw new Error('Resend package not available');
+    if (!rateLimit.allowed) {
+      logContactEvent("rate_limited", { ip: clientIp });
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: rateLimit.retryAfterSeconds
+            ? { "Retry-After": String(rateLimit.retryAfterSeconds) }
+            : undefined,
         }
-        
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        
-        // Escape HTML to prevent XSS and ensure proper rendering
-        const escapeHtml = (text: string) => {
-          const map: { [key: string]: string } = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;',
-          };
-          return text.replace(/[&<>"']/g, (m) => map[m]);
-        };
+      );
+    }
 
-        const escapedName = escapeHtml(name);
-        const escapedEmail = escapeHtml(email);
-        const escapedMessage = escapeHtml(message).replace(/\n/g, '<br>');
+    if (!isEmailConfigured()) {
+      logContactEvent("not_configured");
+      return NextResponse.json(
+        {
+          error:
+            "Message delivery is temporarily unavailable. Please try again later or use the email link below.",
+        },
+        { status: 503 }
+      );
+    }
 
-        // Ensure CONTACT_EMAIL is defined (TypeScript safety)
-        const contactEmail = process.env.CONTACT_EMAIL;
-        if (!contactEmail) {
-          throw new Error('CONTACT_EMAIL is not set');
-        }
+    let Resend;
+    try {
+      const resendModule = await import("resend");
+      Resend = resendModule.Resend;
+    } catch {
+      logContactDeliveryFailure("resend_package_unavailable");
+      return NextResponse.json(
+        { error: "We could not deliver your message. Please try again later." },
+        { status: 500 }
+      );
+    }
 
-        // Create plain text version for better email client compatibility
-        const textVersion = `New Contact Form Submission
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const fromEmail =
+      process.env.RESEND_FROM_EMAIL || "Portfolio Contact <onboarding@resend.dev>";
+    const contactEmail = process.env.CONTACT_EMAIL;
+
+    if (!contactEmail) {
+      logContactEvent("not_configured");
+      return NextResponse.json(
+        {
+          error:
+            "Message delivery is temporarily unavailable. Please try again later or use the email link below.",
+        },
+        { status: 503 }
+      );
+    }
+
+    const escapedName = escapeHtml(name);
+    const escapedEmail = escapeHtml(email);
+    const escapedMessage = escapeHtml(message).replace(/\n/g, "<br>");
+
+    const textVersion = `New Contact Form Submission
 
 Name: ${name}
 Email: ${email}
@@ -113,13 +130,13 @@ ${message}
 ---
 This message was sent from your portfolio contact form.`;
 
-        const emailPayload = {
-          from: fromEmail,
-          to: contactEmail,
-          replyTo: email,
-          subject: `New Contact Form Message from ${name}`,
-          text: textVersion,
-          html: `
+    const emailPayload = {
+      from: fromEmail,
+      to: contactEmail,
+      replyTo: email,
+      subject: `New Contact Form Message from ${name}`,
+      text: textVersion,
+      html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h2 style="color: #333; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
                 New Contact Form Submission
@@ -137,131 +154,47 @@ This message was sent from your portfolio contact form.`;
               </p>
             </div>
           `,
-        };
+    };
 
-        console.log('📤 Attempting to send email via Resend...', {
-          to: contactEmail,
-          from: fromEmail,
-          subject: emailPayload.subject,
-        });
+    const result = await resend.emails.send(emailPayload);
 
-        const result = await resend.emails.send(emailPayload);
-        
-        // Log the full response for debugging
-        console.log('📨 Full Resend API response:', JSON.stringify(result, null, 2));
-        
-        // Check if Resend returned an error in the response
-        if (result.error) {
-          emailErrorDetails = `Resend API error: ${JSON.stringify(result.error)}`;
-          console.error('❌ Resend API returned an error:', result.error);
-          throw new Error(emailErrorDetails);
-        }
-        
-        // Check if we got a valid response with an id
-        if (result.data && result.data.id) {
-          emailSent = true;
-          console.log('✅ Email sent successfully via Resend!', {
-            emailId: result.data.id,
-            to: contactEmail,
-          });
-        } else {
-          // Log the full result to help debug
-          emailErrorDetails = `Resend returned an unexpected response format. Full response: ${JSON.stringify(result)}`;
-          console.error('❌ Unexpected Resend response format:', result);
-          console.error('❌ Response type:', typeof result);
-          console.error('❌ Response keys:', Object.keys(result || {}));
-          throw new Error(emailErrorDetails);
-        }
-      } catch (emailError: any) {
-        emailErrorDetails = emailError.message || String(emailError);
-        
-        // Check for specific Resend error types
-        if (emailError.response) {
-          console.error('❌ Resend HTTP Error Response:', {
-            status: emailError.response?.status,
-            statusText: emailError.response?.statusText,
-            data: emailError.response?.data,
-          });
-          emailErrorDetails = `Resend HTTP Error: ${emailError.response?.status} - ${JSON.stringify(emailError.response?.data || emailError.message)}`;
-        } else if (emailError.message) {
-          console.error('❌ Resend Error Message:', emailError.message);
-        }
-        
-        console.error('❌ Full error details:', {
-          error: emailErrorDetails,
-          message: emailError.message,
-          stack: emailError.stack,
-          name: emailError.name,
-          code: emailError.code,
-          type: typeof emailError,
-          keys: Object.keys(emailError || {}),
-        });
-        // Continue to log the message even if email fails
-      }
-    } else {
-      const missingVar = !hasApiKey ? 'RESEND_API_KEY' : 'CONTACT_EMAIL';
-      emailErrorDetails = `${missingVar} is not set in environment variables`;
-      
-      if (isProduction) {
-        console.error('⚠️  Email service not configured on Vercel:', emailErrorDetails);
-        console.error('📝 To fix: Add environment variables in Vercel dashboard → Settings → Environment Variables');
-        console.error('📝 Then redeploy your application. See VERCEL_SETUP.md for detailed instructions.');
-      } else {
-        console.warn('⚠️  Email service not configured:', emailErrorDetails);
-        console.warn('📝 To fix: Create .env.local file with RESEND_API_KEY and CONTACT_EMAIL');
-      }
+    if (result.error) {
+      const reason =
+        typeof result.error.message === "string"
+          ? result.error.message
+          : "resend_api_error";
+      logContactDeliveryFailure(reason);
+      return NextResponse.json(
+        { error: "We could not deliver your message. Please try again later." },
+        { status: 502 }
+      );
     }
 
-    // Log the message (always done for backup/debugging)
-    console.log('📝 Contact form submission:', {
-      name,
-      email,
-      messageLength: message.length,
-      emailSent,
-      emailError: emailErrorDetails,
-      timestamp: new Date().toISOString(),
-    });
-
-    // If email service is not configured or failed, log detailed information
-    if (!emailSent) {
-      if (emailErrorDetails) {
-        console.error('⚠️  Email sending failed:', emailErrorDetails);
-      } else if (!process.env.RESEND_API_KEY || !process.env.CONTACT_EMAIL) {
-        if (isProduction) {
-          console.error(
-            '⚠️  Email service not configured on Vercel.\n' +
-            '📝 To fix:\n' +
-            '1. Go to Vercel dashboard → Settings → Environment Variables\n' +
-            '2. Add RESEND_API_KEY and CONTACT_EMAIL\n' +
-            '3. Redeploy your application\n' +
-            'See VERCEL_SETUP.md for detailed instructions.'
-          );
-        } else {
-          console.warn(
-            '⚠️  Email service not configured. Messages are being logged only.\n' +
-            'To enable email notifications, set RESEND_API_KEY and CONTACT_EMAIL in your .env.local file.\n' +
-            'Get a free API key at: https://resend.com'
-          );
-        }
-      }
+    const emailId = result.data?.id;
+    if (!emailId || typeof emailId !== "string") {
+      logContactDeliveryFailure("missing_delivery_id");
+      return NextResponse.json(
+        { error: "We could not deliver your message. Please try again later." },
+        { status: 502 }
+      );
     }
+
+    logContactDelivered(emailId, email);
 
     return NextResponse.json(
-      { 
-        success: true, 
-        message: 'Your message has been sent successfully!' 
+      {
+        success: true,
+        message: "Your message has been sent successfully!",
       },
       { status: 200 }
     );
-  } catch (error: any) {
-    console.error('Contact form error:', error);
+  } catch (error) {
+    logContactEvent("request_error", {
+      reason: error instanceof Error ? error.name : "unknown_error",
+    });
     return NextResponse.json(
-      { 
-        error: 'Failed to send message. Please try again later.',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
-      },
+      { error: "Failed to send message. Please try again later." },
       { status: 500 }
     );
   }
 }
-
