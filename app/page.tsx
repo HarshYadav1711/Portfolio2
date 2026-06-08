@@ -4,6 +4,7 @@ import QuickFacts from "@/components/sections/QuickFacts";
 import About from "@/components/sections/About";
 import Impact from "@/components/sections/Impact";
 import Skills from "@/components/sections/Skills";
+import HowIBuild from "@/components/sections/HowIBuild";
 import Projects from "@/components/sections/Projects";
 import Process from "@/components/sections/Process";
 import Resume from "@/components/sections/Resume";
@@ -19,6 +20,7 @@ export default function Home() {
       <About />
       <Impact />
       <Skills />
+      <HowIBuild />
       <Projects />
       <Process />
       <Resume />
