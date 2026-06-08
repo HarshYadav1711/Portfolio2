@@ -31,6 +31,59 @@ export const FEATURED_PROJECT_ORDER: string[] = [
   "primetrade",
 ];
 
+/** Visual previews for featured projects — swap .svg placeholders for .png screenshots when available */
+export const PROJECT_SCREENSHOTS: Record<
+  string,
+  { src: string; alt: string }
+> = {
+  "climaterisk-sentinel": {
+    src: "/projects/climaterisk-sentinel.svg",
+    alt: "ClimateRisk Sentinel geospatial climate-risk dashboard preview",
+  },
+  "ai_based_galaxy_morphology_classifier": {
+    src: "/projects/galaxy-morphology.svg",
+    alt: "AI-Based Galaxy Morphology Classifier model training dashboard preview",
+  },
+  applynest: {
+    src: "/projects/applynest.svg",
+    alt: "ApplyNest job application Kanban board preview",
+  },
+  primetrade: {
+    src: "/projects/primetrade.svg",
+    alt: "Primetrade crypto trading portfolio dashboard preview",
+  },
+  qps: {
+    src: "/projects/qps.svg",
+    alt: "QPS project dashboard preview",
+  },
+};
+
+export function resolveProjectPreview(
+  repoName: string,
+  index: number
+): { image: string; imageAlt: string } {
+  const nameLower = repoName.toLowerCase();
+
+  const matchedKey = Object.keys(PROJECT_SCREENSHOTS).find((key) =>
+    nameLower.includes(key)
+  );
+  if (matchedKey) {
+    const { src, alt } = PROJECT_SCREENSHOTS[matchedKey];
+    return { image: src, imageAlt: alt };
+  }
+
+  const orderedKey = FEATURED_PROJECT_ORDER[index];
+  if (orderedKey && PROJECT_SCREENSHOTS[orderedKey]) {
+    const { src, alt } = PROJECT_SCREENSHOTS[orderedKey];
+    return { image: src, imageAlt: alt };
+  }
+
+  return {
+    image: "",
+    imageAlt: "",
+  };
+}
+
 export const RESUME_PROJECT_DETAILS: {
   [key: string]: { description: string; tech: string[] };
 } = {

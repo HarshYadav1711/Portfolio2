@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
-import { ExternalLink, Github, Star } from "lucide-react";
+import { ExternalLink, Github, ImageIcon, Star } from "lucide-react";
 import Image from "next/image";
 import gsap from "gsap";
 import {
@@ -180,6 +180,67 @@ function ProjectEngineeringDetails({ project }: { project: Project }) {
   );
 }
 
+function ProjectPreview({
+  project,
+  index,
+}: {
+  project: Project;
+  index: number;
+}) {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const hasImage = Boolean(project.image) && !imageError;
+  const isSvg = project.image?.endsWith(".svg") ?? false;
+  const alt =
+    project.imageAlt || `${project.title} product preview`;
+
+  if (!hasImage) {
+    return <ProjectPreviewFallback title={project.title} />;
+  }
+
+  return (
+    <>
+      {!imageLoaded && (
+        <div
+          className="absolute inset-0 animate-pulse bg-gradient-to-br from-gray-800 to-gray-900"
+          aria-hidden
+        />
+      )}
+      <Image
+        src={project.image}
+        alt={alt}
+        fill
+        className={`object-cover transition-opacity duration-500 ${
+          imageLoaded ? "opacity-100" : "opacity-0"
+        }`}
+        quality={85}
+        priority={index < 2}
+        loading={index < 2 ? "eager" : "lazy"}
+        sizes="(max-width: 768px) 100vw, 50vw"
+        unoptimized={isSvg}
+        onLoad={() => setImageLoaded(true)}
+        onError={() => setImageError(true)}
+      />
+    </>
+  );
+}
+
+function ProjectPreviewFallback({ title }: { title: string }) {
+  return (
+    <div
+      className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-gray-800 to-gray-900 p-6 text-center"
+      role="img"
+      aria-label={`${title} preview unavailable`}
+    >
+      <ImageIcon className="w-10 h-10 text-gray-600" aria-hidden />
+      <span className="text-gray-500 text-sm font-medium max-w-[80%]">
+        {title}
+      </span>
+    </div>
+  );
+}
+
 function DetailBlock({ label, content }: { label: string; content: string }) {
   return (
     <div>
@@ -231,24 +292,8 @@ function ProjectCard({
         className={`relative w-full md:w-1/2 aspect-video bg-gradient-to-br from-gray-800 to-gray-900 border overflow-hidden group ${project.featured ? "border-accent-yellow/60" : "border-gray-700/50"}`}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-accent-yellow/10 to-accent-red/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        <div className="relative w-full h-full">
-          {project.image && (
-            <Image
-              src={project.image}
-              alt={project.title}
-              fill
-              className="object-cover"
-              unoptimized
-              quality={95}
-              priority={index < 2}
-              sizes="(max-width: 768px) 100vw, 50vw"
-              onError={(e) => {
-                const target = e.currentTarget as HTMLImageElement;
-                target.style.display = "none";
-              }}
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 pointer-events-none z-[-1]" />
+        <div className="relative w-full h-full min-h-0">
+          <ProjectPreview project={project} index={index} />
         </div>
         <motion.div
           className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"

@@ -6,6 +6,7 @@ import {
   PROJECT_DISPLAY_NAMES,
   FEATURED_PROJECT_ORDER,
   RESUME_PROJECT_DETAILS,
+  resolveProjectPreview,
 } from "./config";
 import { buildProjectInsights } from "./project-insights";
 
@@ -30,6 +31,7 @@ export interface Project {
   description: string;
   tech: string[];
   image: string;
+  imageAlt?: string;
   liveUrl: string;
   githubUrl: string;
   featured?: boolean;
@@ -171,57 +173,6 @@ async function validateUrl(url: string): Promise<boolean> {
     return false;
   }
 }
-
-// Available project images in the public folder
-// These will be matched to projects in order (first project gets first image, etc.)
-const PROJECT_IMAGES = [
-  '/Screenshot 2025-12-09 234211.png',
-  '/Screenshot 2025-12-09 234256.png',
-  '/Screenshot 2025-12-09 234320.png',
-  '/Screenshot 2025-12-09 234343.png',
-];
-
-// Map project names to their specific images
-const getProjectImage = (repoName: string, index: number): string => {
-  const nameLower = repoName.toLowerCase();
-  
-  // Map specific project names to their images
-  if (nameLower.includes('primetrade')) {
-    return '/Screenshot 2025-12-09 234211.png';
-  }
-  if (nameLower.includes('climaterisk')) {
-    return '/Screenshot 2025-12-09 234256.png';
-  }
-  if (nameLower.includes('applynest')) {
-    return '/Screenshot 2025-12-09 234320.png';
-  }
-  if (nameLower.includes('galaxy') || nameLower.includes('morphology')) {
-    return '/Screenshot 2025-12-09 234343.png';
-  }
-  if (nameLower.includes('qps')) {
-    return "/QPS.png";
-  }
-  if (nameLower === '1' || nameLower.trim() === '1') {
-    return '/1.png';
-  }
-  if (nameLower.includes('blog') && nameLower.includes('website')) {
-    return '/Blog Website.png';
-  }
-  if (nameLower.includes('pokeslider') || nameLower.includes('poke-slider')) {
-    return '/PokeSlider.png';
-  }
-  if (nameLower.includes('her')) {
-    return '/Her.png';
-  }
-  if (nameLower.includes('portfolio')) {
-    return '/Portfolio.png';
-  }
-  
-  // Fallback to index-based assignment
-  return index < PROJECT_IMAGES.length 
-    ? PROJECT_IMAGES[index] 
-    : `/project${index + 1}.jpg`;
-};
 
 // Convert GitHub repos to Project format
 export async function convertReposToProjects(repos: GitHubRepo[], username: string): Promise<Project[]> {
@@ -392,8 +343,10 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
         }
       }
 
-      // Assign image based on project name, or fallback to index-based assignment
-      const projectImage = getProjectImage(repo.name, index);
+      const { image: projectImage, imageAlt } = resolveProjectPreview(
+        repo.name,
+        index
+      );
 
       // Use custom display name if configured, otherwise format repo name
       const customTitle = Object.keys(PROJECT_DISPLAY_NAMES).find(key => nameLower.includes(key));
@@ -412,6 +365,7 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
         description: description,
         tech: tech.length > 0 ? tech : ['JavaScript', 'Git'],
         image: projectImage,
+        imageAlt: imageAlt || undefined,
         liveUrl: liveUrl,
         githubUrl: repo.html_url,
         featured,
@@ -456,12 +410,15 @@ export function getCuratedFallbackProjects(): Project[] {
       nameLower,
     });
 
+    const preview = resolveProjectPreview(key, index);
+
     return [
       {
         title,
         description: details.description,
         tech: details.tech,
-        image: getProjectImage(key, index),
+        image: preview.image,
+        imageAlt: preview.imageAlt || undefined,
         liveUrl: "",
         githubUrl: `https://github.com/${GITHUB_USERNAME}/${key}`,
         featured: true,
