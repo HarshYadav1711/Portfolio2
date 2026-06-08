@@ -1,7 +1,9 @@
 import type { GitHubRepo, GitHubUserProfile } from "./github";
+import { RESUME_PROJECT_DETAILS } from "./config";
 import {
   EDUCATION_START_DATE,
-  INTERNSHIPS,
+  PRODUCTION_SYSTEMS,
+  getCompletedInternships,
   getListedSkills,
 } from "./profile-data";
 
@@ -11,44 +13,42 @@ export interface ImpactMetric {
   source: string;
 }
 
-const ACTIVE_PROJECT_MONTHS = 12;
 const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000;
 
-function normalizeTech(value: string): string {
-  return value.trim().toLowerCase();
+function repoMatchesSlug(repo: GitHubRepo, slug: string): boolean {
+  return (
+    !repo.fork &&
+    repo.name.toLowerCase().includes(slug.toLowerCase())
+  );
 }
 
-function countTechnologies(repos: GitHubRepo[]): number {
-  const technologies = new Set<string>();
+function countResumeProjects(repos: GitHubRepo[]): number {
+  const slugs = Object.keys(RESUME_PROJECT_DETAILS);
 
-  getListedSkills().forEach((skill) => technologies.add(normalizeTech(skill)));
+  if (repos.length === 0) {
+    return slugs.length;
+  }
 
-  repos.forEach((repo) => {
-    if (repo.language) {
-      technologies.add(normalizeTech(repo.language));
-    }
-    repo.topics.forEach((topic) => technologies.add(normalizeTech(topic)));
-  });
-
-  return technologies.size;
-}
-
-function countActiveProjects(repos: GitHubRepo[]): number {
-  const cutoff = Date.now() - ACTIVE_PROJECT_MONTHS * 30 * 24 * 60 * 60 * 1000;
-
-  return repos.filter(
-    (repo) =>
-      !repo.fork &&
-      !repo.archived &&
-      new Date(repo.updated_at).getTime() >= cutoff
+  return slugs.filter((slug) =>
+    repos.some((repo) => repoMatchesSlug(repo, slug))
   ).length;
 }
 
-function countOriginalRepos(repos: GitHubRepo[]): number {
-  return repos.filter((repo) => !repo.fork).length;
+function countProductionSystems(repos: GitHubRepo[]): number {
+  if (repos.length === 0) {
+    return PRODUCTION_SYSTEMS.length;
+  }
+
+  return PRODUCTION_SYSTEMS.filter((slug) =>
+    repos.some((repo) => repoMatchesSlug(repo, slug))
+  ).length;
 }
 
-function calculateYearsLearning(
+function countTechnologiesApplied(): number {
+  return getListedSkills().length;
+}
+
+function calculateYearsBuilding(
   repos: GitHubRepo[],
   profile: GitHubUserProfile | null
 ): number {
@@ -70,8 +70,8 @@ function calculateYearsLearning(
     }
   }
 
-  const learningStart = Math.min(...startTimestamps);
-  const years = (Date.now() - learningStart) / MS_PER_YEAR;
+  const buildingStart = Math.min(...startTimestamps);
+  const years = (Date.now() - buildingStart) / MS_PER_YEAR;
 
   return Math.round(years * 10) / 10;
 }
@@ -84,14 +84,23 @@ export function computeImpactMetrics(
   repos: GitHubRepo[],
   profile: GitHubUserProfile | null
 ): ImpactMetric[] {
-  const publicRepoCount =
-    profile?.public_repos ?? countOriginalRepos(repos);
-  const repoSource = profile
-    ? "Public repositories on GitHub"
-    : "Original repositories fetched from GitHub";
+  const projectCount = countResumeProjects(repos);
+  const projectSource =
+    repos.length > 0
+      ? "Resume projects with matching public GitHub repositories"
+      : "Portfolio projects documented on resume";
 
-  const years = calculateYearsLearning(repos, profile);
-  const yearSources: string[] = [`B.Tech start (${EDUCATION_START_DATE.slice(0, 7)})`];
+  const productionCount = countProductionSystems(repos);
+  const productionSource =
+    repos.length > 0
+      ? "Full-stack systems (auth, API, data layer) verified on GitHub"
+      : "Full-stack systems listed on resume";
+
+  const completedInternships = getCompletedInternships();
+  const years = calculateYearsBuilding(repos, profile);
+  const yearSources: string[] = [
+    `B.Tech start (${EDUCATION_START_DATE.slice(0, 7)})`,
+  ];
   if (profile?.created_at) {
     yearSources.push("GitHub account creation");
   }
@@ -102,27 +111,27 @@ export function computeImpactMetrics(
 
   return [
     {
-      label: "GitHub Repositories",
-      value: String(publicRepoCount),
-      source: repoSource,
+      label: "Projects Completed",
+      value: String(projectCount),
+      source: projectSource,
     },
     {
-      label: "Technologies Used",
-      value: String(countTechnologies(repos)),
-      source: "Listed skills plus languages and topics from public repos",
+      label: "Technologies Applied",
+      value: String(countTechnologiesApplied()),
+      source: "Skills listed on resume and portfolio",
     },
     {
-      label: "Internship Experiences",
-      value: String(INTERNSHIPS.length),
-      source: "Completed and in-progress internships on resume",
+      label: "Internships Completed",
+      value: String(completedInternships.length),
+      source: `Finished roles: ${completedInternships.map((i) => i.role).join(", ")}`,
     },
     {
-      label: "Active Projects",
-      value: String(countActiveProjects(repos)),
-      source: `Non-fork, non-archived repos updated in the last ${ACTIVE_PROJECT_MONTHS} months`,
+      label: "Production Systems Built",
+      value: String(productionCount),
+      source: productionSource,
     },
     {
-      label: "Years Learning Software Development",
+      label: "Years Building Software",
       value: formatYears(years),
       source: `From earliest of ${yearSources.join(", ")}`,
     },

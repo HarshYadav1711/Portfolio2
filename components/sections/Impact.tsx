@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { Briefcase, Clock, Code2, FolderGit2, Layers } from "lucide-react";
+import { Briefcase, Clock, Code2, FolderGit2, Server } from "lucide-react";
 import gsap from "gsap";
 import { GITHUB_USERNAME } from "@/lib/config";
 import { fetchGitHubRepos, fetchGitHubUserProfile } from "@/lib/github";
 import { computeImpactMetrics, type ImpactMetric } from "@/lib/impact-metrics";
 
-const METRIC_ICONS = [FolderGit2, Code2, Briefcase, Layers, Clock];
+const METRIC_ICONS = [FolderGit2, Code2, Briefcase, Server, Clock];
 
 export default function Impact() {
   const ref = useRef<HTMLDivElement>(null);
@@ -80,7 +80,7 @@ export default function Impact() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-gray-400 text-center max-w-2xl mx-auto mb-16"
         >
-          Verifiable metrics calculated from GitHub activity, listed skills, and resume data.
+          Verifiable engineering metrics from resume projects, listed skills, and GitHub profile.
         </motion.p>
 
         {loading ? (

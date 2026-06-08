@@ -73,27 +73,42 @@ export function getCurrentAcademicYear(): string {
   return `${currentYear}${suffix} Year`;
 }
 
-/** Internship entries — used for dynamic impact counts */
+/** Internship entries — status reflects resume timeline */
 export const INTERNSHIPS = [
   {
     year: "2026",
     role: "Full Stack Development Intern",
     company: "VibeOps (Remote)",
+    status: "in_progress",
   },
   {
     year: "2025",
     role: "Cybersecurity Intern",
     company: "Prodigy Infotech (Remote)",
+    status: "completed",
   },
   {
     year: "2025",
     role: "Python Programming Intern",
     company: "CodeAlpha (Remote)",
+    status: "completed",
   },
 ] as const;
 
+/** Full-stack apps with auth, API, and persistence — documented on resume */
+export const PRODUCTION_SYSTEMS = [
+  "climaterisk-sentinel",
+  "applynest",
+  "primetrade",
+] as const;
+
+export function getCompletedInternships() {
+  return INTERNSHIPS.filter((internship) => internship.status === "completed");
+}
+
 export function getInternshipSummary(): string {
-  return `${INTERNSHIPS.length} internships — ${INTERNSHIPS.map((i) => i.role).join(", ")}`;
+  const completed = getCompletedInternships().length;
+  return `${completed} completed · ${INTERNSHIPS.length} total — ${INTERNSHIPS.map((i) => i.role).join(", ")}`;
 }
 
 export const SKILL_CATEGORIES: Record<string, string[]> = {
