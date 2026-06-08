@@ -112,15 +112,28 @@ export function getInternshipSummary(): string {
 }
 
 export const SKILL_CATEGORIES: Record<string, string[]> = {
-  Languages: ["Python", "JavaScript", "TypeScript", "SQL", "C++"],
-  Frontend: ["React.js", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap", "Vite"],
-  Backend: ["Node.js", "Express.js", "FastAPI", "REST APIs", "JWT Authentication"],
-  Databases: ["PostgreSQL", "MongoDB", "SQLite", "MySQL", "PostGIS"],
-  "AI / ML": [
+  "Full-Stack Engineering": [
+    "React.js",
+    "TypeScript",
+    "JavaScript",
+    "HTML5",
+    "CSS3",
+    "Tailwind CSS",
+    "Bootstrap",
+    "Vite",
+  ],
+  "Backend Systems": [
+    "Python",
+    "FastAPI",
+    "Node.js",
+    "Express.js",
+    "REST APIs",
+    "JWT Authentication",
+    "C++",
+  ],
+  "AI & Machine Learning": [
     "PyTorch",
     "Scikit-learn",
-    "Pandas",
-    "NumPy",
     "TensorFlow",
     "Deep Learning",
     "CNNs",
@@ -128,9 +141,23 @@ export const SKILL_CATEGORIES: Record<string, string[]> = {
     "Data Preprocessing",
     "Model Evaluation",
     "Predictive Modeling",
+    "Pandas",
+    "NumPy",
   ],
-  Geospatial: ["GeoPandas", "Rasterio", "Shapely", "Leaflet", "STAC APIs"],
-  "Tools & Platforms": ["Git", "GitHub", "Docker", "Postman", "Figma"],
+  "Data & Databases": [
+    "PostgreSQL",
+    "MongoDB",
+    "PostGIS",
+    "SQL",
+    "SQLite",
+    "MySQL",
+    "GeoPandas",
+    "Rasterio",
+    "Shapely",
+    "Leaflet",
+    "STAC APIs",
+  ],
+  "Developer Tools": ["Git", "GitHub", "Docker", "Postman", "Figma"],
 };
 
 export function getListedSkills(): string[] {
