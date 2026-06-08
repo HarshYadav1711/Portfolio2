@@ -100,7 +100,7 @@ export default function QuickFacts() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-gray-400 text-center max-w-2xl mx-auto mb-12"
         >
-          A snapshot for recruiters — key details at a glance.
+          Recruiter snapshot.
         </motion.p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-16">
@@ -177,7 +177,7 @@ export default function QuickFacts() {
             <div>
               <p className="text-white font-semibold">Full resume available</p>
               <p className="text-gray-500 text-sm">
-                Experience, education, certifications, and project details.
+                Experience, education, certifications, projects.
               </p>
             </div>
           </div>

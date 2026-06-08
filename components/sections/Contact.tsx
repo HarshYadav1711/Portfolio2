@@ -179,7 +179,7 @@ export default function Contact() {
             className="space-y-8"
           >
             <p className="text-gray-400 text-lg leading-relaxed">
-              Let&apos;s discuss your next project or explore collaboration opportunities.
+              Open to software engineering internships. Reach out via form or links below.
             </p>
             
             <div className="flex flex-col gap-4">

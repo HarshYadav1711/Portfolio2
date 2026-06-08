@@ -14,7 +14,7 @@ export const PROFILE = {
 } as const;
 
 export const PROFESSIONAL_SUMMARY =
-  "AI/ML-focused Computer Science undergraduate with hands-on experience building machine learning and deep learning systems using Python, PyTorch, Scikit-learn, Pandas, and FastAPI.";
+  "CS undergraduate building ML and full-stack systems in Python, PyTorch, Scikit-learn, Pandas, and FastAPI.";
 
 export const PRIMARY_TECHNOLOGIES = [
   "Python",
@@ -35,19 +35,19 @@ export const AREAS_OF_INTEREST = [
 export const CURRENTLY_EXPLORING = [
   {
     title: "AI Applications",
-    description: "Building practical ML features and GenAI-assisted workflows in production apps.",
+    description: "ML features and GenAI-assisted workflows in production apps.",
   },
   {
     title: "Full Stack Systems",
-    description: "End-to-end delivery with React, Node.js, and API-first architecture.",
+    description: "End-to-end delivery: React, Node.js, API-first architecture.",
   },
   {
     title: "Scalable Architecture",
-    description: "Reliable services, auth flows, and data layers that hold up beyond demos.",
+    description: "Auth flows, data layers, and services beyond demo scope.",
   },
   {
     title: "Modern Web Engineering",
-    description: "TypeScript, component design, and performance-minded frontend patterns.",
+    description: "TypeScript, component design, performance-minded frontend patterns.",
   },
 ] as const;
 
@@ -108,7 +108,7 @@ export function getCompletedInternships() {
 
 export function getInternshipSummary(): string {
   const completed = getCompletedInternships().length;
-  return `${completed} completed · ${INTERNSHIPS.length} total — ${INTERNSHIPS.map((i) => i.role).join(", ")}`;
+  return `${completed} completed · ${INTERNSHIPS.length} total — full-stack, cybersecurity, Python/ML`;
 }
 
 export const SKILL_CATEGORIES: Record<string, string[]> = {
@@ -151,13 +151,13 @@ export const CERTIFICATIONS = [
 ] as const;
 
 export const ACHIEVEMENT_ACTIVITIES = [
-  "Codefront 2.0 Hackathon — Team Logic Lords (Google Developer Groups On Campus).",
-  "Elite Coders Winter of Code (ECWoC) — open-source participation among 5000+ participants.",
+  "Codefront 2.0 Hackathon — Team Logic Lords (GDG On Campus).",
+  "Elite Coders Winter of Code (ECWoC) — open source among 5000+ participants.",
   "DRISHTI: Annual Youth Dialogue 2026 — Hindu College, University of Delhi.",
   "Renaissance-Techspan 2026 Participation Certificate.",
-  "DevFest 2025 (United Institute of Technology, Prayagraj) — hands-on lab sessions on emerging technology topics.",
-  "Active open-source contributor and self-directed learner with strong interest in scalable backend systems and applied AI/ML.",
-  "Interests: competitive coding, game development, and AI research.",
+  "DevFest 2025 (UIT Prayagraj) — hands-on labs on emerging tech.",
+  "Open-source contributor; focus on scalable backends and applied AI/ML.",
+  "Interests: competitive coding, game development, AI research.",
 ] as const;
 
 /** Compact achievement cards — summaries only; full detail lives in Resume */

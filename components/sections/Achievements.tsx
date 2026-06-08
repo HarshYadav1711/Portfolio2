@@ -61,7 +61,7 @@ export default function Achievements() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-gray-400 text-center max-w-2xl mx-auto mb-12"
         >
-          Credentials, competitions, and community work — evidence before the full resume.
+          Credentials, competitions, and community work.
         </motion.p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
@@ -112,7 +112,7 @@ export default function Achievements() {
             className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-accent-yellow transition-colors"
           >
             <ArrowDown className="w-4 h-4" />
-            Full certifications and activities in Resume
+            Full list in Resume
           </a>
         </motion.div>
       </div>

@@ -89,22 +89,22 @@ export const RESUME_PROJECT_DETAILS: {
 } = {
   "climaterisk-sentinel": {
     description:
-      "Geospatial climate-risk intelligence platform using Microsoft Planetary Computer STAC APIs, PostGIS, and open satellite datasets with interactive GIS dashboards, AOI validation, and heuristic risk scoring.",
+      "Climate-risk geospatial platform: Planetary Computer STAC APIs, PostGIS, open satellite data, GIS dashboards, AOI validation, heuristic risk scoring.",
     tech: ["React", "TypeScript", "FastAPI", "PostGIS", "GeoPandas", "Rasterio", "Leaflet"],
   },
   "ai_based_galaxy_morphology_classifier": {
     description:
-      "Deep learning pipeline for classifying galaxy morphologies into Spiral, Elliptical, and Irregular categories using SDSS and Galaxy Zoo datasets with CNN architectures and deployment-ready inference.",
+      "CNN pipeline classifying galaxy morphologies (Spiral, Elliptical, Irregular) on SDSS and Galaxy Zoo data with deployment-ready inference.",
     tech: ["PyTorch", "Deep Learning", "Python", "CNN"],
   },
   "applynest": {
     description:
-      "Full-stack job application tracking platform with authentication, Kanban workflow management, drag-and-drop pipelines, and AI-assisted job description parsing with deterministic fallback logic.",
+      "Full-stack job tracker: auth, Kanban drag-and-drop, AI-assisted JD parsing with deterministic offline fallback.",
     tech: ["React", "TypeScript", "Express.js", "MongoDB", "JWT"],
   },
   "primetrade": {
     description:
-      "High-performance trading position tracker with JWT authentication, portfolio analytics, automated P&L calculations, and containerized FastAPI backend with async SQLAlchemy.",
+      "Crypto position tracker: JWT auth, portfolio analytics, automated P&L, containerized FastAPI backend with async SQLAlchemy.",
     tech: ["FastAPI", "PostgreSQL", "React", "Docker"],
   },
 };

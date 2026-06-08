@@ -80,7 +80,7 @@ export default function Impact() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-gray-400 text-center max-w-2xl mx-auto mb-16"
         >
-          Verifiable engineering metrics from resume projects, listed skills, and GitHub profile.
+          Verifiable metrics from resume, skills, and GitHub.
         </motion.p>
 
         {loading ? (

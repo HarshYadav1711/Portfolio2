@@ -19,17 +19,17 @@ const buildAreas = [
       {
         name: "Performance",
         description:
-          "I trim bundle size, lazy-load where it helps, and fix re-render issues before adding complexity.",
+          "Trim bundle size, lazy-load where useful, fix re-renders before adding complexity.",
       },
       {
         name: "Accessibility",
         description:
-          "Semantic HTML, form labels, and keyboard-friendly flows — basics I apply on every UI I ship.",
+          "Semantic HTML, labeled forms, keyboard-friendly flows on every UI.",
       },
       {
         name: "Maintainability",
         description:
-          "Small components, typed props, and consistent patterns so features are easier to extend later.",
+          "Small components, typed props, consistent patterns for easier extension.",
       },
     ],
   },
@@ -40,17 +40,17 @@ const buildAreas = [
       {
         name: "APIs",
         description:
-          "REST endpoints with clear request/response shapes, input validation, and predictable error codes.",
+          "REST endpoints with typed shapes, input validation, predictable error codes.",
       },
       {
         name: "Architecture",
         description:
-          "I separate routes, business logic, and data access so projects stay organized as they grow.",
+          "Separate routes, business logic, and data access as projects grow.",
       },
       {
         name: "Reliability",
         description:
-          "Validate inputs early, return meaningful errors, and avoid silent failures on critical paths.",
+          "Early input validation, meaningful errors, no silent failures on critical paths.",
       },
     ],
   },
@@ -61,12 +61,12 @@ const buildAreas = [
       {
         name: "Modeling",
         description:
-          "Schemas shaped around real queries and relationships — not just tables that mirror CRUD forms.",
+          "Schemas shaped around real queries and relationships, not CRUD-mirror tables.",
       },
       {
         name: "Scalability",
         description:
-          "Indexes, pagination, and avoiding N+1 queries on the data-heavy features I've built so far.",
+          "Indexes, pagination, and N+1 avoidance on data-heavy features.",
       },
     ],
   },
@@ -77,17 +77,17 @@ const buildAreas = [
       {
         name: "Git",
         description:
-          "Focused commits, descriptive messages, and branches that make reviews and rollbacks straightforward.",
+          "Focused commits, clear messages, branches that simplify review and rollback.",
       },
       {
         name: "Documentation",
         description:
-          "README setup steps, API notes, and comments where behavior isn't obvious from the code alone.",
+          "README setup, API notes, comments where code alone isn't clear.",
       },
       {
         name: "Clean Code",
         description:
-          "Readable names, small functions, and refactoring when duplication starts slowing me down.",
+          "Readable names, small functions, refactor when duplication slows progress.",
       },
     ],
   },
@@ -98,17 +98,17 @@ const buildAreas = [
       {
         name: "Optimization",
         description:
-          "Measure first, then fix bottlenecks — I avoid premature optimization on projects still taking shape.",
+          "Measure first, then fix bottlenecks; no premature optimization.",
       },
       {
         name: "Loading Speed",
         description:
-          "Right-sized assets, code splitting, and keeping first paint lean on the apps I've deployed.",
+          "Right-sized assets, code splitting, lean first paint on deployed apps.",
       },
       {
         name: "Responsiveness",
         description:
-          "Layouts and interactions that hold up across screen sizes without breaking core flows.",
+          "Layouts and interactions that hold across screen sizes without breaking core flows.",
       },
     ],
   },
@@ -162,7 +162,7 @@ export default function HowIBuild() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-gray-400 text-center max-w-2xl mx-auto mb-16"
         >
-          Principles I follow on student and internship projects — still learning, but intentional about how I work.
+          Engineering principles from student and internship projects.
         </motion.p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

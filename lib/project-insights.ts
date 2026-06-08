@@ -26,7 +26,7 @@ const RESUME_INSIGHTS: Record<
 > = {
   "climaterisk-sentinel": {
     problem:
-      "Infrastructure and planning teams need a practical way to assess climate-related geospatial risk for a defined area using open satellite data.",
+      "Assess climate-related geospatial risk for defined areas using open satellite data.",
     keyFeatures: [
       "AOI-based infrastructure analysis with validation workflows",
       "NDVI, NDWI, and NDBI raster analytics pipelines",
@@ -41,19 +41,19 @@ const RESUME_INSIGHTS: Record<
       "GeoPandas, Rasterio, and Shapely for raster/vector processing",
     ],
     engineeringChallenge:
-      "Aligning heterogeneous satellite rasters across projections and resolutions — solved with spatial reprojection pipelines and consistent AOI-based processing in GeoPandas/Rasterio.",
+      "Aligned heterogeneous satellite rasters across projections and resolutions via reprojection pipelines and AOI-scoped GeoPandas/Rasterio processing.",
     contribution:
-      "Built the end-to-end platform: STAC data ingestion, raster analytics workflows, API layer, and interactive GIS dashboard.",
+      "End-to-end platform: STAC ingestion, raster analytics, API layer, GIS dashboard.",
     outcomes: [
-      "Supports spatial analysis across NDVI, NDWI, and NDBI satellite-derived layers within validated AOIs.",
-      "Delivers heuristic climate-risk scoring with infrastructure proximity metrics for a defined area.",
-      "Enables interactive map-based exploration with temporal analysis on Leaflet dashboards.",
-      "Ingests open raster catalogs on demand through Microsoft Planetary Computer STAC APIs.",
+      "NDVI, NDWI, and NDBI analysis within validated AOIs.",
+      "Heuristic climate-risk scoring with infrastructure proximity metrics.",
+      "Interactive map exploration with temporal analysis on Leaflet.",
+      "On-demand raster ingestion via Planetary Computer STAC APIs.",
     ],
   },
   "ai_based_galaxy_morphology_classifier": {
     problem:
-      "Classifying galaxy morphologies manually does not scale across large astronomical survey datasets.",
+      "Manual galaxy morphology labeling does not scale across large survey datasets.",
     keyFeatures: [
       "Spiral, Elliptical, and Irregular classification pipeline",
       "SDSS and Galaxy Zoo dataset ingestion and preprocessing",
@@ -68,19 +68,19 @@ const RESUME_INSIGHTS: Record<
       "Modular inference path for scalable prediction",
     ],
     engineeringChallenge:
-      "Balancing model accuracy with training efficiency on survey-scale data — addressed with a lightweight CNN, augmentation strategy, and reproducible checkpointing.",
+      "Balanced accuracy and training efficiency via lightweight CNN, augmentation, and reproducible checkpointing.",
     contribution:
-      "Implemented the full ML workflow from dataset preparation through model training, evaluation, and inference-ready deployment scripts.",
+      "Full ML workflow: dataset prep, training, evaluation, inference-ready deployment scripts.",
     outcomes: [
-      "Automates morphology labeling into Spiral, Elliptical, and Irregular classes from survey imagery.",
-      "Runs a reproducible preprocessing-to-training workflow on SDSS and Galaxy Zoo datasets.",
-      "Supports batch prediction through deployment-ready inference scripts.",
-      "Tracks per-class evaluation metrics for comparing model checkpoints during training.",
+      "Automated Spiral, Elliptical, and Irregular labeling from survey imagery.",
+      "Reproducible preprocessing-to-training on SDSS and Galaxy Zoo data.",
+      "Batch prediction via deployment-ready inference scripts.",
+      "Per-class metrics for comparing checkpoints during training.",
     ],
   },
   applynest: {
     problem:
-      "Job seekers lack a single place to track applications across stages and consistently extract requirements from job descriptions.",
+      "No single system to track applications across stages and extract requirements from job descriptions.",
     keyFeatures: [
       "JWT-authenticated user accounts and protected routes",
       "Kanban-style application pipeline with drag-and-drop",
@@ -95,19 +95,19 @@ const RESUME_INSIGHTS: Record<
       "Modular parsing layer with validation and fallback logic",
     ],
     engineeringChallenge:
-      "Keeping JD parsing reliable when external AI APIs are unavailable — implemented deterministic fallback logic so parsing and bullet generation still work offline.",
+      "Reliable JD parsing without external AI APIs—deterministic fallback keeps parsing and bullet generation working offline.",
     contribution:
-      "Delivered the full stack: auth, Kanban workflow UI, REST API, MongoDB schemas, and the AI-assisted parsing layer with fallback behavior.",
+      "Full stack: auth, Kanban UI, REST API, MongoDB schemas, AI-assisted parsing with offline fallback.",
     outcomes: [
-      "Consolidates job application tracking across drag-and-drop Kanban pipeline stages.",
-      "Extracts structured fields from job descriptions with AI-assisted parsing and deterministic offline fallback.",
-      "Protects per-user application records behind JWT-authenticated REST endpoints.",
-      "Generates resume bullets from parsed job requirement data.",
+      "Kanban pipeline tracking across application stages.",
+      "Structured JD extraction via AI parsing with offline fallback.",
+      "Per-user records behind JWT-authenticated REST endpoints.",
+      "Resume bullets generated from parsed requirement data.",
     ],
   },
   primetrade: {
     problem:
-      "Active crypto traders need accurate position tracking, automated P&L, and portfolio-level analytics in one place.",
+      "Crypto traders need position tracking, automated P&L, and portfolio analytics in one system.",
     keyFeatures: [
       "JWT-authenticated trade and position logging",
       "Automated P&L calculations per position",
@@ -123,14 +123,14 @@ const RESUME_INSIGHTS: Record<
       "Dockerized multi-service architecture",
     ],
     engineeringChallenge:
-      "Maintaining fast async database access while enforcing per-user data isolation — solved with async SQLAlchemy, scoped queries, and a modular backend architecture.",
+      "Fast async DB access with per-user isolation—async SQLAlchemy, scoped queries, modular backend.",
     contribution:
-      "Built the async API, authentication layer, P&L analytics engine, React client integration, and Docker Compose setup.",
+      "Async API, auth layer, P&L analytics engine, React client, Docker Compose setup.",
     outcomes: [
-      "Computes automated profit-and-loss per trading position from logged entries.",
-      "Surfaces portfolio-level performance summaries through async FastAPI endpoints.",
-      "Enforces per-user isolation across trade and position records in PostgreSQL.",
-      "Runs as Docker Compose services for reproducible local and containerized setups.",
+      "Automated per-position P&L from logged trade entries.",
+      "Portfolio summaries via async FastAPI endpoints.",
+      "Per-user isolation for trade and position records in PostgreSQL.",
+      "Docker Compose for reproducible local and containerized runs.",
     ],
   },
 };

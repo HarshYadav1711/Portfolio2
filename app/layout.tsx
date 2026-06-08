@@ -23,7 +23,7 @@ const siteUrl = getSiteUrl();
 const siteName = "Harsh Yadav";
 const title = "Harsh Yadav | Full Stack Developer";
 const description =
-  "AI/ML-focused full-stack developer portfolio featuring React, Next.js, Node.js, PyTorch, and FastAPI projects, internship experience, and production-oriented engineering work.";
+  "Full-stack developer portfolio: React, Next.js, Node.js, PyTorch, FastAPI projects, 3 internships, production-oriented engineering.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

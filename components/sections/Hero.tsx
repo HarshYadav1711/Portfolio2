@@ -9,31 +9,31 @@ const LETTER_DETAILS = [
     letter: "H",
     expansion: "High-Impact Engineering",
     description:
-      "Production features shipped across three internships—web apps, APIs, and internal tools in active use.",
+      "Production features across 3 internships—web apps, APIs, internal tools in active use.",
   },
   {
     letter: "A",
     expansion: "Applied Artificial Intelligence",
     description:
-      "End-to-end ML work in PyTorch with deployment-ready inference, not notebook-only experiments.",
+      "PyTorch ML with deployment-ready inference—not notebook-only experiments.",
   },
   {
     letter: "R",
     expansion: "Reliable Backend Systems",
     description:
-      "Node.js and FastAPI backends with clear contracts, tested auth paths, and graceful error handling.",
+      "Node.js and FastAPI backends: typed contracts, tested auth, graceful error handling.",
   },
   {
     letter: "S",
     expansion: "Scalable Product Development",
     description:
-      "Full-stack React delivery from schema and API design through UI, built to extend without rewrites.",
+      "Full-stack React from schema and API design through UI—built to extend without rewrites.",
   },
   {
     letter: "H",
     expansion: "Human-Centered Problem Solving",
     description:
-      "Projects anchored in real workflows—application tracking, geospatial analysis, and financial reconciliation.",
+      "Projects from real workflows—job tracking, geospatial analysis, trade reconciliation.",
   },
 ] as const;
 
@@ -302,7 +302,7 @@ export default function Hero() {
           className="description text-white text-lg md:text-xl lg:text-2xl font-light max-w-2xl mx-auto leading-relaxed"
           initial={{ opacity: 0 }}
         >
-          I build software for real workflows — authenticated web apps, geospatial analysis tools, and ML models with deployment-ready inference. B.Tech CS student with three internships shipping production features in React, Node.js, Python, and PyTorch. Open to software engineering internships.
+          Authenticated web apps, geospatial analysis, deployment-ready ML inference. B.Tech CS · 3 internships · React, Node.js, Python, PyTorch. Open to software engineering internships.
         </motion.p>
       </motion.div>
 

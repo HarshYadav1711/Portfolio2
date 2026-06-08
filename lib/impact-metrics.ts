@@ -87,14 +87,14 @@ export function computeImpactMetrics(
   const projectCount = countResumeProjects(repos);
   const projectSource =
     repos.length > 0
-      ? "Resume projects with matching public GitHub repositories"
-      : "Portfolio projects documented on resume";
+      ? "Resume projects matched to public GitHub repos"
+      : "Resume-documented portfolio projects";
 
   const productionCount = countProductionSystems(repos);
   const productionSource =
     repos.length > 0
-      ? "Full-stack systems (auth, API, data layer) verified on GitHub"
-      : "Full-stack systems listed on resume";
+      ? "Auth, API, and data-layer systems verified on GitHub"
+      : "Full-stack systems on resume";
 
   const completedInternships = getCompletedInternships();
   const years = calculateYearsBuilding(repos, profile);
@@ -118,12 +118,12 @@ export function computeImpactMetrics(
     {
       label: "Technologies Applied",
       value: String(countTechnologiesApplied()),
-      source: "Skills listed on resume and portfolio",
+      source: "Resume and portfolio skill listings",
     },
     {
       label: "Internships Completed",
       value: String(completedInternships.length),
-      source: `Finished roles: ${completedInternships.map((i) => i.role).join(", ")}`,
+      source: `Completed: ${completedInternships.map((i) => i.role).join(", ")}`,
     },
     {
       label: "Production Systems Built",

@@ -99,7 +99,7 @@ export default function About() {
               transition={{ duration: 0.8, delay: 0.1 }}
               className="text-lg text-gray-400 leading-relaxed"
             >
-              I&apos;m a Computer Science undergrad who learns by building software I&apos;d actually use. Most of my projects started from a specific problem — tracking job applications in one place, lining up satellite rasters for a map view, or getting trade P&amp;L to match logged positions. That work pulled me through <span className="text-accent-yellow font-semibold">PyTorch and Python</span> for ML, React and Node.js for full-stack features, and geospatial tooling when the data refuses to cooperate.
+              CS undergrad building from concrete problems—job tracking, geospatial raster alignment, trade P&amp;L reconciliation—using <span className="text-accent-yellow font-semibold">PyTorch, React, and Node.js</span> as each problem requires.
             </motion.p>
 
             <motion.p
@@ -108,7 +108,7 @@ export default function About() {
               transition={{ duration: 0.8, delay: 0.15 }}
               className="text-lg text-gray-400 leading-relaxed"
             >
-              I usually debug with logs and a small repro before reaching for a new framework. Three internships — full-stack, cybersecurity, and Python/ML — reinforced practical habits: clear API boundaries, auth that fails safely, and training paths someone else can rerun. I&apos;m most engaged where <span className="text-accent-red font-semibold">model and backend choices</span> show up in what people actually use, not just in a demo or notebook.
+              Three internships (full-stack, cybersecurity, Python/ML) reinforced API boundaries, safe auth, and reproducible training paths. Focus: <span className="text-accent-red font-semibold">backend and model decisions</span> in shipped software, not demos.
             </motion.p>
 
             <motion.div

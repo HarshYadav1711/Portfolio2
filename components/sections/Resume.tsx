@@ -20,21 +20,21 @@ export default function Resume() {
       role: "Full Stack Development Intern",
       company: "VibeOps (Remote)",
       description:
-        "Built full-stack, production-oriented features using React, Node.js, REST APIs, and PostgreSQL-backed services. Designed responsive UI workflows in Figma and implemented scalable frontend-backend integrations. Used GenAI tools such as Cursor and GitHub Copilot to improve development speed while maintaining production-oriented code quality and modular architecture.",
+        "Full-stack features in React, Node.js, REST APIs, and PostgreSQL. Figma-to-code UI workflows. GenAI tooling (Cursor, Copilot) for speed without sacrificing modular, production-oriented code.",
     },
     {
       period: "May 2025",
       role: "Python Programming Intern",
       company: "CodeAlpha (Remote)",
       description:
-        "Built Python and ML-oriented data preprocessing pipelines using Pandas and NumPy, including feature engineering and dataset transformation workflows. Trained supervised and unsupervised learning models with Scikit-learn for experimentation and predictive analysis on structured datasets.",
+        "Python/ML preprocessing pipelines in Pandas and NumPy—feature engineering and dataset transformation. Trained supervised and unsupervised Scikit-learn models for predictive analysis on structured data.",
     },
     {
       period: "Jun 2025",
       role: "Cybersecurity Intern",
       company: "Prodigy Infotech (Remote)",
       description:
-        "Conducted vulnerability assessments and manual penetration testing on web applications. Documented critical security flaws, risk analysis findings, and mitigation strategies for improving application security posture.",
+        "Vulnerability assessments and manual penetration testing on web apps. Documented critical flaws, risk findings, and mitigation strategies.",
     },
   ];
 
@@ -43,7 +43,7 @@ export default function Resume() {
       period: "Oct 2023 – Oct 2027",
       degree: "Bachelor of Technology, Computer Science",
       institution: "United College of Engineering and Research — Prayagraj, India",
-      details: "CGPA: 7.60/10. Coursework in Data Structures & Algorithms, Machine Learning, System Design, DBMS, and Computer Networking — applied directly in full-stack and ML project work.",
+      details: "CGPA 7.60/10. Coursework: DSA, ML, System Design, DBMS, Networking—applied in full-stack and ML projects.",
     },
   ];
 

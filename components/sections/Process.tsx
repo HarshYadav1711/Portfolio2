@@ -10,25 +10,25 @@ const steps = [
     icon: Search,
     title: "Discover",
     description:
-      "Clarify the problem, who's affected, and what constraints matter before choosing a stack.",
+      "Define the problem, affected users, and constraints before choosing a stack.",
   },
   {
     icon: Palette,
     title: "Design",
     description:
-      "Sketch flows, define API contracts, and align UI structure with how people actually use the feature.",
+      "Sketch flows, define API contracts, align UI to actual usage.",
   },
   {
     icon: Code,
     title: "Develop",
     description:
-      "Implement incrementally with typed APIs, tested auth paths, and code organized for the next change.",
+      "Build incrementally with typed APIs, tested auth, code organized for the next change.",
   },
   {
     icon: Rocket,
     title: "Deliver",
     description:
-      "Ship, verify core paths work, and note what to improve on the next pass.",
+      "Ship, verify core paths, note improvements for the next pass.",
   },
 ];
 
