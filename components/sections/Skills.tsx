@@ -4,18 +4,12 @@ import { useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import gsap from "gsap";
 
+import { SKILL_CATEGORIES } from "@/lib/profile-data";
+
 // ============================================
 // PERSONALIZE: Update skill categories and technologies
 // ============================================
-const skillCategories = {
-  Languages: ["Python", "JavaScript", "TypeScript", "SQL", "C++"],
-  Frontend: ["React.js", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap", "Vite"],
-  Backend: ["Node.js", "Express.js", "FastAPI", "REST APIs", "JWT Authentication"],
-  Databases: ["PostgreSQL", "MongoDB", "SQLite", "MySQL", "PostGIS"],
-  "AI / ML": ["PyTorch", "Scikit-learn", "Pandas", "NumPy", "Deep Learning", "Feature Engineering"],
-  Geospatial: ["GeoPandas", "Rasterio", "Shapely", "Leaflet", "STAC APIs"],
-  "Tools & Platforms": ["Git", "GitHub", "Docker", "Postman", "Figma"],
-};
+const skillCategories = SKILL_CATEGORIES;
 
 export default function Skills() {
   const ref = useRef<HTMLDivElement>(null);

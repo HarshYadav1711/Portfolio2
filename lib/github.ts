@@ -124,6 +124,31 @@ export async function fetchGitHubRepos(username: string): Promise<GitHubRepo[]> 
   }
 }
 
+export interface GitHubUserProfile {
+  public_repos: number;
+  created_at: string;
+}
+
+export async function fetchGitHubUserProfile(
+  username: string
+): Promise<GitHubUserProfile | null> {
+  try {
+    const response = await fetch(
+      `/api/github-user?username=${encodeURIComponent(username)}`,
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error(`GitHub user API error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching GitHub user profile:", error);
+    return null;
+  }
+}
+
 // Validate URL format
 function isValidUrlFormat(url: string): boolean {
   try {
