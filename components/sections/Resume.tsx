@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Download, ExternalLink } from "lucide-react";
+import { RESUME_DOWNLOAD_NAME, RESUME_PATH } from "@/lib/profile-data";
 
 export default function Resume() {
   const ref = useRef<HTMLDivElement>(null);
@@ -90,19 +91,19 @@ export default function Resume() {
           className="flex justify-center gap-4 mb-16 flex-wrap"
         >
           <motion.a
-            href="/Harsh Yadav Resume.pdf"
+            href={RESUME_PATH}
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-8 py-4 bg-accent-yellow text-black font-semibold hover:bg-accent-yellowLight transition-all duration-300"
+            className="flex items-center gap-2 px-8 py-4 bg-accent-yellow text-black font-semibold hover:bg-accent-yellowLight transition-all duration-300 shadow-[0_0_24px_rgba(255,215,0,0.15)]"
           >
             <ExternalLink className="w-5 h-5" />
             View Resume
           </motion.a>
           <motion.a
-            href="/Harsh Yadav Resume.pdf"
-            download="Harsh_Yadav_Resume.pdf"
+            href={RESUME_PATH}
+            download={RESUME_DOWNLOAD_NAME}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-accent-yellow text-accent-yellow font-semibold hover:bg-accent-yellow hover:text-black transition-all duration-300"

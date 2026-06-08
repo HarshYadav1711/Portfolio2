@@ -1,5 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/sections/Hero";
+import QuickFacts from "@/components/sections/QuickFacts";
 import About from "@/components/sections/About";
 import Impact from "@/components/sections/Impact";
 import Skills from "@/components/sections/Skills";
@@ -14,6 +15,7 @@ export default function Home() {
     <main className="relative">
       <Navigation />
       <Hero />
+      <QuickFacts />
       <About />
       <Impact />
       <Skills />
