@@ -136,6 +136,67 @@ export default function Projects() {
   );
 }
 
+function ProjectEngineeringDetails({ project }: { project: Project }) {
+  if (!project.problem) return null;
+
+  return (
+    <div className="space-y-5 pt-2 border-t border-gray-800/80">
+      <DetailBlock label="Problem" content={project.problem} />
+
+      {project.keyFeatures && project.keyFeatures.length > 0 && (
+        <div>
+          <h4 className="text-accent-yellow font-semibold text-sm uppercase tracking-wider mb-2">
+            Key Features
+          </h4>
+          <ul className="space-y-1.5">
+            {project.keyFeatures.map((feature) => (
+              <li key={feature} className="text-gray-400 text-sm leading-relaxed flex gap-2">
+                <span className="text-accent-yellow mt-1.5 shrink-0">•</span>
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {project.technicalHighlights && project.technicalHighlights.length > 0 && (
+        <div>
+          <h4 className="text-accent-yellow font-semibold text-sm uppercase tracking-wider mb-2">
+            Technical Highlights
+          </h4>
+          <ul className="space-y-1.5">
+            {project.technicalHighlights.map((highlight) => (
+              <li key={highlight} className="text-gray-400 text-sm leading-relaxed flex gap-2">
+                <span className="text-accent-red mt-1.5 shrink-0">•</span>
+                <span>{highlight}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {project.engineeringChallenge && (
+        <DetailBlock label="Engineering Challenge" content={project.engineeringChallenge} />
+      )}
+
+      {project.contribution && (
+        <DetailBlock label="Contribution" content={project.contribution} />
+      )}
+    </div>
+  );
+}
+
+function DetailBlock({ label, content }: { label: string; content: string }) {
+  return (
+    <div>
+      <h4 className="text-accent-yellow font-semibold text-sm uppercase tracking-wider mb-2">
+        {label}
+      </h4>
+      <p className="text-gray-400 text-sm leading-relaxed">{content}</p>
+    </div>
+  );
+}
+
 function ProjectCard({
   project,
   index,
@@ -209,6 +270,8 @@ function ProjectCard({
       <div className="w-full md:w-1/2 space-y-6">
         <h3 className="text-3xl md:text-4xl font-bold">{project.title}</h3>
         <p className="text-gray-400 text-lg leading-relaxed">{project.description}</p>
+
+        <ProjectEngineeringDetails project={project} />
         
         <div className="flex flex-wrap gap-2">
           {project.tech.map((tech) => (

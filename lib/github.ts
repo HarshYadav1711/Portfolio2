@@ -1,5 +1,6 @@
 // GitHub API utility functions
 import { PRIORITIZED_PROJECTS, EXCLUDED_PROJECTS, PROJECT_DISPLAY_NAMES, FEATURED_PROJECT_ORDER, RESUME_PROJECT_DETAILS } from './config';
+import { buildProjectInsights } from './project-insights';
 
 export interface GitHubRepo {
   id: number;
@@ -25,13 +26,19 @@ export interface Project {
   liveUrl: string;
   githubUrl: string;
   featured?: boolean;
+  problem?: string;
+  keyFeatures?: string[];
+  technicalHighlights?: string[];
+  engineeringChallenge?: string;
+  contribution?: string;
 }
 
-// Tech stack detection based on repository topics and language
+// Tech stack detection based on repository topics, language, name, and description
 const detectTechStack = (repo: GitHubRepo): string[] => {
   const tech: string[] = [];
   const topics = repo.topics.map(t => t.toLowerCase());
   const language = repo.language?.toLowerCase() || '';
+  const meta = `${repo.name} ${repo.description || ''}`.toLowerCase();
 
   // Frontend
   if (topics.includes('react') || topics.includes('nextjs') || topics.includes('next.js')) tech.push('React', 'Next.js');
@@ -46,8 +53,21 @@ const detectTechStack = (repo: GitHubRepo): string[] => {
   if (topics.includes('nodejs') || topics.includes('node.js') || language === 'javascript') tech.push('Node.js');
   if (topics.includes('express') || topics.includes('expressjs')) tech.push('ExpressJS');
   if (topics.includes('python') || language === 'python') tech.push('Python');
-  if (topics.includes('fastapi')) tech.push('FastAPI');
-  if (topics.includes('django')) tech.push('Django');
+  if (topics.includes('fastapi') || meta.includes('fastapi')) tech.push('FastAPI');
+  if (topics.includes('django') || meta.includes('django')) tech.push('Django');
+  if (meta.includes('next.js') || meta.includes('nextjs')) tech.push('Next.js');
+  if (meta.includes('typescript')) tech.push('TypeScript');
+  if (meta.includes('tailwind')) tech.push('TailwindCSS');
+  if (meta.includes('pytorch')) tech.push('PyTorch');
+  if (meta.includes('docker')) tech.push('Docker');
+  if (meta.includes('postgis') || meta.includes('geopandas') || meta.includes('leaflet')) {
+    tech.push('PostGIS', 'GeoPandas', 'Leaflet');
+  }
+  if (meta.includes('mongodb')) tech.push('MongoDB');
+  if (meta.includes('postgresql') || meta.includes('postgres')) tech.push('PostgreSQL');
+  if (meta.includes('jwt')) tech.push('JWT');
+  if (meta.includes('express')) tech.push('ExpressJS');
+  if (meta.includes('vite')) tech.push('Vite');
 
   // Databases
   if (topics.includes('mongodb')) tech.push('MongoDB');
@@ -370,6 +390,7 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
             .join(' ');
 
       const featured = isPrioritizedProject(repo);
+      const insights = buildProjectInsights(repo, { title, description, tech, nameLower });
 
       return {
         title,
@@ -379,6 +400,7 @@ export async function convertReposToProjects(repos: GitHubRepo[], username: stri
         liveUrl: liveUrl,
         githubUrl: repo.html_url,
         featured,
+        ...insights,
       };
     })
   );
