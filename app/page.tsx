@@ -18,14 +18,14 @@ export default function Home() {
       <Navigation />
       <Hero />
       <QuickFacts />
-      <About />
       <Impact />
+      <Projects />
+      <Resume />
+      <About />
       <Achievements />
       <Skills />
       <HowIBuild />
-      <Projects />
       <Process />
-      <Resume />
       <Contact />
       <Footer />
     </main>
