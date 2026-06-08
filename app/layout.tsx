@@ -8,22 +8,58 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-// ============================================
-// PERSONALIZE: Update site metadata for SEO
-// ============================================
+function getSiteUrl(): string {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "http://localhost:3000";
+}
+
+const siteUrl = getSiteUrl();
+const siteName = "Harsh Yadav";
+const title = "Harsh Yadav | Full Stack Developer";
+const description =
+  "Full Stack Developer portfolio focused on React, Next.js, Node.js, and AI applications. Projects, internship experience, and production-oriented web development work.";
+
 export const metadata: Metadata = {
-  title: "Harsh Yadav | Full Stack Developer & Software Engineer",
-  description:
-    "Portfolio of Harsh Yadav — Full Stack Developer and Software Engineer building with React, Next.js, Node.js, and AI applications. Projects, experience, and resume.",
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
   keywords: [
-    "Harsh Yadav",
     "Full Stack Developer",
     "Software Engineer",
-    "React",
-    "Next.js",
-    "Node.js",
+    "React Developer",
+    "Next.js Developer",
+    "Node.js Developer",
     "AI Applications",
   ],
+  authors: [{ name: siteName, url: siteUrl }],
+  creator: siteName,
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName,
+    title,
+    description,
+    images: [
+      {
+        url: "/profile.jpg",
+        width: 1200,
+        height: 630,
+        alt: `${siteName} — Full Stack Developer`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/profile.jpg"],
+  },
 };
 
 export default function RootLayout({
