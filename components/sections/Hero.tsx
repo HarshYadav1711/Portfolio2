@@ -7,33 +7,33 @@ import gsap from "gsap";
 const LETTER_DETAILS = [
   {
     letter: "H",
-    expansion: "High-Performance Engineering",
+    expansion: "High-Impact Engineering",
     description:
-      "Designing systems optimized for speed, reliability, and measurable impact at scale.",
+      "Production features shipped across three internships—web apps, APIs, and internal tools in active use.",
   },
   {
     letter: "A",
-    expansion: "Applied AI & Machine Learning",
+    expansion: "Applied Artificial Intelligence",
     description:
-      "Building practical ML systems that solve real-world problems beyond experimentation.",
+      "End-to-end ML work in PyTorch with deployment-ready inference, not notebook-only experiments.",
   },
   {
     letter: "R",
-    expansion: "Resilient Backend Systems",
+    expansion: "Reliable Backend Systems",
     description:
-      "Architecting APIs and services that handle failure gracefully and stay dependable under load.",
+      "Node.js and FastAPI backends with clear contracts, tested auth paths, and graceful error handling.",
   },
   {
     letter: "S",
     expansion: "Scalable Product Development",
     description:
-      "Shipping full-stack features that grow with users without compromising maintainability.",
+      "Full-stack React delivery from schema and API design through UI, built to extend without rewrites.",
   },
   {
     letter: "H",
     expansion: "Human-Centered Problem Solving",
     description:
-      "Translating real user workflows into software that is intuitive, accessible, and genuinely useful.",
+      "Projects anchored in real workflows—application tracking, geospatial analysis, and financial reconciliation.",
   },
 ] as const;
 
