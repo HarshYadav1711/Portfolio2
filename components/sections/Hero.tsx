@@ -84,7 +84,7 @@ export default function Hero() {
           className="designing-text text-accent-yellow text-2xl md:text-3xl lg:text-4xl font-bold mb-4 tracking-wider"
           initial={{ opacity: 0 }}
         >
-          AI/ML · FULL STACK · PRODUCTION SYSTEMS
+          FULL-STACK APPS · ML PIPELINES · PRODUCTION APIs
         </motion.div>
 
         {/* Large outlined name */}
@@ -119,7 +119,7 @@ export default function Hero() {
           className="description text-white text-lg md:text-xl lg:text-2xl font-light max-w-2xl mx-auto leading-relaxed"
           initial={{ opacity: 0 }}
         >
-          AI/ML-focused CS undergraduate building deep learning systems, full-stack web apps, and FastAPI backends with Python, PyTorch, React, and Node.js — open to internships on production code.
+          I build software for real workflows — authenticated web apps, geospatial analysis tools, and ML models with deployment-ready inference. B.Tech CS student with three internships shipping production features in React, Node.js, Python, and PyTorch. Open to software engineering internships.
         </motion.p>
       </motion.div>
 
