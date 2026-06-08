@@ -80,60 +80,75 @@ function formatYears(value: number): string {
   return value % 1 === 0 ? `${value}` : value.toFixed(1);
 }
 
+function formatResumeProjectSlugs(): string {
+  return Object.keys(RESUME_PROJECT_DETAILS).join(", ");
+}
+
+function formatProductionSystemSlugs(): string {
+  return PRODUCTION_SYSTEMS.join(", ");
+}
+
 export function computeImpactMetrics(
   repos: GitHubRepo[],
   profile: GitHubUserProfile | null
 ): ImpactMetric[] {
+  const resumeProjectSlugs = formatResumeProjectSlugs();
+  const productionSlugs = formatProductionSystemSlugs();
   const projectCount = countResumeProjects(repos);
   const projectSource =
     repos.length > 0
-      ? "Resume projects matched to public GitHub repos"
-      : "Resume-documented portfolio projects";
+      ? `Resume projects (${resumeProjectSlugs}) with a matching public GitHub repository`
+      : `${Object.keys(RESUME_PROJECT_DETAILS).length} projects on resume: ${resumeProjectSlugs}`;
 
   const productionCount = countProductionSystems(repos);
   const productionSource =
     repos.length > 0
-      ? "Auth, API, and data-layer systems verified on GitHub"
-      : "Full-stack systems on resume";
+      ? `${productionSlugs} — auth, API, and database layers on resume; matched on GitHub`
+      : `${productionSlugs} — full-stack systems listed on resume`;
 
   const completedInternships = getCompletedInternships();
+  const internshipSource =
+    completedInternships.length > 0
+      ? `${completedInternships.map((i) => `${i.company} (${i.role})`).join(" · ")} — resume`
+      : "No completed internships listed on resume";
+
   const years = calculateYearsBuilding(repos, profile);
   const yearSources: string[] = [
     `B.Tech start (${EDUCATION_START_DATE.slice(0, 7)})`,
   ];
   if (profile?.created_at) {
-    yearSources.push("GitHub account creation");
+    yearSources.push("GitHub account creation date");
   }
   const originalRepos = repos.filter((repo) => !repo.fork);
   if (originalRepos.length > 0) {
-    yearSources.push("earliest public repository");
+    yearSources.push("earliest public repository date");
   }
 
   return [
     {
-      label: "Projects Completed",
+      label: "Resume Projects on GitHub",
       value: String(projectCount),
       source: projectSource,
     },
     {
-      label: "Technologies Applied",
+      label: "Skills Listed on Resume",
       value: String(countTechnologiesApplied()),
-      source: "Resume and portfolio skill listings",
+      source: "Distinct technologies in resume Skills section (portfolio mirrors resume)",
     },
     {
-      label: "Internships Completed",
+      label: "Completed Internships",
       value: String(completedInternships.length),
-      source: `Completed: ${completedInternships.map((i) => i.role).join(", ")}`,
+      source: internshipSource,
     },
     {
-      label: "Production Systems Built",
+      label: "Full-Stack Resume Projects",
       value: String(productionCount),
       source: productionSource,
     },
     {
-      label: "Years Building Software",
+      label: "Documented Timeline",
       value: formatYears(years),
-      source: `From earliest of ${yearSources.join(", ")}`,
+      source: `Years since earliest of ${yearSources.join(", ")}`,
     },
   ];
 }

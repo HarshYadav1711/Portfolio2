@@ -80,12 +80,12 @@ export default function Impact() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-gray-400 text-center max-w-2xl mx-auto mb-16"
         >
-          Verifiable metrics from resume, skills, and GitHub.
+          Counts derived from resume entries, GitHub repositories, and education dates.
         </motion.p>
 
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="text-gray-400">Calculating impact...</div>
+            <div className="text-gray-400">Loading metrics...</div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
