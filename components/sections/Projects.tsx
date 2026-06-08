@@ -12,6 +12,7 @@ import {
   type Project,
 } from "@/lib/github";
 import { GITHUB_USERNAME } from "@/lib/config";
+import { deriveProjectScopeBadges } from "@/lib/project-badges";
 
 const fallbackProjects = getCuratedFallbackProjects();
 
@@ -287,6 +288,9 @@ function ProjectCard({
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
   const isEven = index % 2 === 0;
+  const scopeBadges = project.featured
+    ? deriveProjectScopeBadges(project)
+    : [];
 
   return (
     <motion.div
@@ -319,6 +323,18 @@ function ProjectCard({
       {/* Content */}
       <div className="w-full md:w-1/2 space-y-6">
         <h3 className="text-3xl md:text-4xl font-bold">{project.title}</h3>
+        {scopeBadges.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {scopeBadges.map((badge) => (
+              <span
+                key={badge}
+                className="px-2.5 py-0.5 text-xs font-medium tracking-wide border border-accent-yellow/40 text-accent-yellow bg-accent-yellow/5"
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
+        )}
         <p className="text-gray-400 text-lg leading-relaxed">{project.description}</p>
 
         <ProjectEngineeringDetails project={project} />
