@@ -99,7 +99,16 @@ export default function About() {
               transition={{ duration: 0.8, delay: 0.1 }}
               className="text-lg text-gray-400 leading-relaxed"
             >
-              I start with the problem, not the stack. As an AI/ML-focused CS student, I&apos;ve built deep learning pipelines with <span className="text-accent-yellow font-semibold">PyTorch and Python</span>, full-stack apps with React and Node.js, and data-heavy tools like geospatial platforms. I care about clear API design, reliable auth flows, and ML workflows that hold up beyond a demo — especially <span className="text-accent-red font-semibold">applied AI/ML systems</span> where engineering decisions directly affect what users get.
+              I&apos;m a Computer Science undergrad who learns by building software I&apos;d actually use. Most of my projects started from a specific problem — tracking job applications in one place, lining up satellite rasters for a map view, or getting trade P&amp;L to match logged positions. That work pulled me through <span className="text-accent-yellow font-semibold">PyTorch and Python</span> for ML, React and Node.js for full-stack features, and geospatial tooling when the data refuses to cooperate.
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, x: 40 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.15 }}
+              className="text-lg text-gray-400 leading-relaxed"
+            >
+              I usually debug with logs and a small repro before reaching for a new framework. Three internships — full-stack, cybersecurity, and Python/ML — reinforced practical habits: clear API boundaries, auth that fails safely, and training paths someone else can rerun. I&apos;m most engaged where <span className="text-accent-red font-semibold">model and backend choices</span> show up in what people actually use, not just in a demo or notebook.
             </motion.p>
 
             <motion.div
