@@ -206,7 +206,7 @@ export default function Hero() {
       className="relative min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 overflow-hidden pt-32"
     >
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-accent-red pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background-light to-background-dark pointer-events-none" />
 
       {/* Main Content */}
       <motion.div
