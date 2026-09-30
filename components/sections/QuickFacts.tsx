@@ -274,7 +274,7 @@ export default function QuickFacts() {
     <section
       ref={ref}
       id="quick-facts"
-      className="relative py-24 px-6 md:px-12 lg:px-24 bg-background-light border-y border-gray-800/50"
+      className="relative py-32 px-6 md:px-12 lg:px-24 bg-background-light border-y border-gray-800/50"
     >
       <div className="max-w-7xl mx-auto">
         <motion.h2
