@@ -274,14 +274,14 @@ export default function QuickFacts() {
     <section
       ref={ref}
       id="quick-facts"
-      className="relative py-32 px-6 md:px-12 lg:px-24 bg-background-light border-y border-gray-800/50"
+      className="relative py-24 px-6 md:px-12 lg:px-24 bg-background-light border-y border-gray-800/50"
     >
       <div className="max-w-7xl mx-auto">
         <motion.h2
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-5xl md:text-6xl font-bold mb-4 text-center text-accent-yellow"
+          className="text-5xl md:text-6xl font-bold mb-4 text-center"
         >
           Quick Facts
         </motion.h2>
