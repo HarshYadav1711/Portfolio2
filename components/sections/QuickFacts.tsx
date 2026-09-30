@@ -281,7 +281,7 @@ export default function QuickFacts() {
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-5xl md:text-6xl font-bold mb-4 text-center"
+          className="text-5xl md:text-6xl font-bold mb-4 text-center text-accent-yellow"
         >
           Quick Facts
         </motion.h2>
